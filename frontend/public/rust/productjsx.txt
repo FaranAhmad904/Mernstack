@@ -1,0 +1,174 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import api from "../services/api";
+import "../styles/Products.css";
+import Navbar from "../components/Navbar";
+
+function Products() {
+
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+
+
+    useEffect(() => {
+
+        const fetchProducts = async () => {
+
+            try {
+
+                const response = await api.get("/products");
+
+                setProducts(response.data);
+
+            } catch (error) {
+
+                console.log("PRODUCT ERROR:", error);
+
+                setError(
+                    error.response?.data?.message ||
+                    "Failed to load products"
+                );
+
+            } finally {
+
+                setLoading(false);
+
+            }
+
+        };
+
+        fetchProducts();
+
+    }, []);
+
+
+    if (loading) {
+        return (
+            <div className="products-page">
+                <h2>Loading products...</h2>
+            </div>
+        );
+    }
+
+
+    if (error) {
+        return (
+            <div className="products-page">
+                <h2>{error}</h2>
+            </div>
+        );
+    }
+
+
+   return (
+    <>
+        <Navbar />
+
+        <div className="products-page">
+
+            <div className="products-header">
+                <p>SHOPHUB STORE</p>
+
+                <h1>
+                    All Products
+                </h1>
+
+                <span>
+                    {products.length} products available
+                </span>
+            </div>
+
+
+            {products.length === 0 ? (
+
+                <div className="no-products">
+
+                    <h2>
+                        No products found
+                    </h2>
+
+                    <p>
+                        Products will appear here once they
+                        are added to ShopHub.
+                    </p>
+
+                </div>
+
+            ) : (
+
+                <div className="products-grid">
+
+                    {products.map((product) => (
+
+                        <div
+                            className="product-card"
+                            key={product._id}
+                        >
+
+                            <div className="product-image">
+
+                                {product.image ? (
+
+                                    <img
+                                        src={product.image}
+                                        alt={product.name}
+                                    />
+
+                                ) : (
+
+                                    <span>
+                                        No Image
+                                    </span>
+
+                                )}
+
+                            </div>
+
+
+                            <div className="product-info">
+
+                                <p className="product-category">
+                                    {product.category}
+                                </p>
+
+                                <h3>
+                                    {product.name}
+                                </h3>
+
+                                <p className="product-description">
+                                    {product.description}
+                                </p>
+
+
+                                <div className="product-bottom">
+
+                                    <span className="product-price">
+                                        Rs. {product.price}
+                                    </span>
+
+                                    <Link
+                                        to={`/products/${product._id}`}
+                                        className="view-product"
+                                    >
+                                        View
+                                    </Link>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    ))}
+
+                </div>
+
+            )}
+
+        </div>
+    </>
+);
+}
+
+export default Products;

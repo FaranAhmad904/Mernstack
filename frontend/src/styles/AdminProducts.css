@@ -1,0 +1,291 @@
+/* ==========================================
+   ADMIN PRODUCTS PAGE
+========================================== */
+
+.admin-products {
+    width: 100%;
+}
+
+
+/* ==========================================
+   PAGE HEADER
+========================================== */
+
+.admin-products-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 30px;
+}
+
+
+.admin-page-label {
+    color: #e91e63;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+}
+
+
+.admin-products-header h1 {
+    font-size: 30px;
+    color: #222222;
+    margin-bottom: 6px;
+}
+
+
+.admin-products-header span {
+    color: #888888;
+    font-size: 14px;
+}
+
+
+/* ==========================================
+   ADD PRODUCT BUTTON
+========================================== */
+
+.add-product-button {
+    background: #e91e63;
+    color: white;
+
+    padding: 12px 20px;
+
+    border-radius: 7px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    transition: 0.2s ease;
+}
+
+
+.add-product-button:hover {
+    background: #d81b60;
+}
+
+
+/* ==========================================
+   TABLE CONTAINER
+========================================== */
+
+.products-table-container {
+    background: white;
+
+    border: 1px solid #eeeeee;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+}
+
+
+/* ==========================================
+   TABLE
+========================================== */
+
+.products-table {
+    width: 100%;
+
+    border-collapse: collapse;
+}
+
+
+.products-table th {
+    background: #fafafa;
+
+    padding: 16px 20px;
+
+    text-align: left;
+
+    font-size: 13px;
+
+    color: #666666;
+
+    border-bottom: 1px solid #eeeeee;
+}
+
+
+.products-table td {
+    padding: 16px 20px;
+
+    border-bottom: 1px solid #eeeeee;
+
+    color: #444444;
+
+    font-size: 14px;
+}
+
+
+.products-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+/* ==========================================
+   PRODUCT NAME
+========================================== */
+
+.admin-product-name {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+.admin-product-image {
+    width: 55px;
+    height: 55px;
+
+    border-radius: 7px;
+
+    background: #f1f1f1;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    flex-shrink: 0;
+}
+
+
+.admin-product-image img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+
+.admin-product-name strong {
+    display: block;
+
+    color: #222222;
+
+    margin-bottom: 5px;
+}
+
+
+.admin-product-name small {
+    display: block;
+
+    max-width: 250px;
+
+    color: #999999;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+
+/* ==========================================
+   STOCK
+========================================== */
+
+.stock-badge {
+    background: #eef7ee;
+
+    color: #388e3c;
+
+    padding: 5px 10px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+
+    font-weight: 600;
+}
+
+
+/* ==========================================
+   ACTION BUTTONS
+========================================== */
+
+.product-actions {
+    display: flex;
+
+    gap: 8px;
+}
+
+
+.product-actions button {
+    border: none;
+
+    background: #f1f1f1;
+
+    padding: 7px 12px;
+
+    border-radius: 5px;
+
+    font-size: 12px;
+
+    cursor: pointer;
+}
+
+
+.product-actions button:hover {
+    background: #e5e5e5;
+}
+
+
+/* ==========================================
+   EMPTY PRODUCTS
+========================================== */
+
+.empty-products {
+    text-align: center;
+
+    padding: 80px 20px;
+}
+
+
+.empty-products h2 {
+    color: #333333;
+
+    margin-bottom: 10px;
+}
+
+
+.empty-products p {
+    color: #888888;
+
+    margin-bottom: 25px;
+}
+
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 900px) {
+
+    .products-table-container {
+        overflow-x: auto;
+    }
+
+    .products-table {
+        min-width: 800px;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .admin-products-header {
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 20px;
+    }
+
+}

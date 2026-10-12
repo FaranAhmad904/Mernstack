@@ -1,0 +1,628 @@
+// ==========================================
+// IMPORTS
+// ==========================================
+
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+
+import {
+    ArrowRight,
+    ShoppingBag,
+    Truck,
+    ShieldCheck,
+    Headphones
+} from "lucide-react";
+
+import api from "../services/api";
+
+import Navbar from "../components/Navbar";
+
+import "../styles/Home.css";
+
+
+// ==========================================
+// HOME PAGE
+// ==========================================
+
+function Home() {
+
+    // ==========================================
+    // STATE
+    // ==========================================
+
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+
+
+    // ==========================================
+    // CATEGORIES
+    // ==========================================
+
+    const categories = [
+        "Electronics",
+        "Clothing",
+        "Shoes",
+        "Accessories"
+    ];
+
+
+    // ==========================================
+    // CATEGORY IMAGES
+    // ==========================================
+
+    const categoryImages = {
+
+        Electronics:
+            "https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=700&q=80",
+
+        Clothing:
+            "https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=700&q=80",
+
+        Shoes:
+            "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=700&q=80",
+
+        Accessories:
+            "https://images.unsplash.com/photo-1523779917675-b6ed3a42a561?auto=format&fit=crop&w=700&q=80"
+    };
+
+
+    // ==========================================
+    // GET PRODUCTS FROM BACKEND
+    // ==========================================
+
+    useEffect(() => {
+
+        const fetchProducts = async () => {
+
+            try {
+
+                setLoading(true);
+                setError("");
+
+                const response = await api.get("/products");
+
+                console.log(
+                    "PRODUCTS FROM BACKEND:",
+                    response.data
+                );
+
+                setProducts(
+                    Array.isArray(response.data)
+                        ? response.data
+                        : response.data.products || []
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "ERROR FETCHING PRODUCTS:",
+                    error
+                );
+
+                setError(
+                    error.response?.data?.message ||
+                    "Unable to load products."
+                );
+
+            } finally {
+
+                setLoading(false);
+
+            }
+
+        };
+
+
+        fetchProducts();
+
+    }, []);
+
+
+    // ==========================================
+    // FEATURED PRODUCTS
+    // ==========================================
+
+    const featuredProducts = products.slice(0, 4);
+
+
+    // ==========================================
+    // FORMAT PRICE
+    // ==========================================
+
+    const formatPrice = (price) => {
+
+        return Number(price || 0).toLocaleString("en-PK");
+
+    };
+
+
+    // ==========================================
+    // RETURN
+    // ==========================================
+
+    return (
+
+        <div className="home-page">
+
+            {/* ==================================
+                NAVBAR
+                ================================== */}
+
+            <Navbar />
+
+
+            {/* ==================================
+                HERO SECTION
+                ================================== */}
+
+            <section className="hero-section">
+
+                <div className="hero-content">
+
+                    <p className="hero-small-title">
+                        WELCOME TO SHOPHUB
+                    </p>
+
+                    <h1>
+                        Everything You Need,
+                        <span> All in One Place.</span>
+                    </h1>
+
+                    <p className="hero-description">
+                        Discover quality products at great prices.
+                        Browse our collection and find products
+                        that fit your everyday needs.
+                    </p>
+
+                    <div className="hero-buttons">
+
+                        <Link
+                            to="/products"
+                            className="primary-button"
+                        >
+                            <ShoppingBag size={18} />
+                            Shop Now
+                        </Link>
+
+                        <Link
+                            to="/products"
+                            className="secondary-button"
+                        >
+                            Explore Products
+                            <ArrowRight size={17} />
+                        </Link>
+
+                    </div>
+
+                </div>
+
+
+                {/* HERO VISUAL */}
+
+                <div className="hero-visual">
+
+                    <div className="hero-card hero-card-main">
+
+                        <ShoppingBag
+                            size={54}
+                            strokeWidth={1.5}
+                        />
+
+                        <p>
+                            Quality Products
+                        </p>
+
+                    </div>
+
+                    <div className="hero-floating-card">
+
+                        <strong>
+                            {products.length}+
+                        </strong>
+
+                        <span>
+                            Products Available
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            {/* ==================================
+                FEATURES
+                ================================== */}
+
+            <section className="features-section">
+
+                <article className="feature-card">
+
+                    <div className="feature-icon">
+
+                        <Truck size={21} />
+
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Easy Shopping
+                        </h3>
+
+                        <p>
+                            Browse products and place your order easily.
+                        </p>
+
+                    </div>
+
+                </article>
+
+
+                <article className="feature-card">
+
+                    <div className="feature-icon">
+
+                        <ShieldCheck size={21} />
+
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Secure Shopping
+                        </h3>
+
+                        <p>
+                            Your account and order information stays protected.
+                        </p>
+
+                    </div>
+
+                </article>
+
+
+                <article className="feature-card">
+
+                    <div className="feature-icon">
+
+                        <Headphones size={21} />
+
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Quality Products
+                        </h3>
+
+                        <p>
+                            Discover products selected for everyday shopping.
+                        </p>
+
+                    </div>
+
+                </article>
+
+            </section>
+
+
+            {/* ==================================
+                CATEGORIES
+                ================================== */}
+
+            <section className="categories-section">
+
+                <header className="section-heading">
+
+                    <p>
+                        SHOP BY CATEGORY
+                    </p>
+
+                    <h2>
+                        Find What You Need
+                    </h2>
+
+                    <span>
+                        Explore our popular product categories.
+                    </span>
+
+                </header>
+
+
+                <div className="category-grid">
+
+                    {categories.map((category) => (
+
+                        <article
+                            className="category-card"
+                            key={category}
+                        >
+
+                            <div className="category-image">
+
+                                <img
+                                    src={categoryImages[category]}
+                                    alt={category}
+                                />
+
+                            </div>
+
+
+                            <div className="category-content">
+
+                                <h3>
+                                    {category}
+                                </h3>
+
+                                <Link to="/products">
+
+                                    View Products
+
+                                    <ArrowRight size={15} />
+
+                                </Link>
+
+                            </div>
+
+                        </article>
+
+                    ))}
+
+                </div>
+
+            </section>
+
+
+            {/* ==================================
+                FEATURED PRODUCTS
+                ================================== */}
+
+            <section className="products-section">
+
+                <header className="section-heading">
+
+                    <p>
+                        FEATURED PRODUCTS
+                    </p>
+
+                    <h2>
+                        Popular Products
+                    </h2>
+
+                    <span>
+                        Check out some of the products available in our store.
+                    </span>
+
+                </header>
+
+
+                {/* LOADING */}
+
+                {loading && (
+
+                    <div className="products-message">
+
+                        <p>
+                            Loading products...
+                        </p>
+
+                    </div>
+
+                )}
+
+
+                {/* ERROR */}
+
+                {!loading && error && (
+
+                    <div className="products-message error">
+
+                        <p>
+                            {error}
+                        </p>
+
+                    </div>
+
+                )}
+
+
+                {/* NO PRODUCTS */}
+
+                {!loading &&
+                    !error &&
+                    featuredProducts.length === 0 && (
+
+                        <div className="products-message">
+
+                            <p>
+                                No products available.
+                            </p>
+
+                        </div>
+
+                    )}
+
+
+                {/* PRODUCTS */}
+
+                {!loading &&
+                    !error &&
+                    featuredProducts.length > 0 && (
+
+                        <div className="product-grid">
+
+                            {featuredProducts.map((product) => (
+
+                                <article
+                                    className="product-card"
+                                    key={product._id}
+                                >
+
+                                    <Link
+                                        to={`/products/${product._id}`}
+                                        className="product-image"
+                                    >
+
+                                        {product.image ? (
+
+                                            <img
+                                                src={product.image}
+                                                alt={product.name}
+                                            />
+
+                                        ) : (
+
+                                            <span>
+                                                No Image
+                                            </span>
+
+                                        )}
+
+                                    </Link>
+
+
+                                    <div className="product-info">
+
+                                        <p className="product-category">
+                                            {product.category}
+                                        </p>
+
+                                        <h3>
+                                            {product.name}
+                                        </h3>
+
+                                        <div className="product-bottom">
+
+                                            <strong className="product-price">
+                                                Rs. {formatPrice(product.price)}
+                                            </strong>
+
+                                            <Link
+                                                to={`/products/${product._id}`}
+                                                className="view-product"
+                                            >
+                                                View
+                                                <ArrowRight size={14} />
+                                            </Link>
+
+                                        </div>
+
+                                    </div>
+
+                                </article>
+
+                            ))}
+
+                        </div>
+
+                    )}
+
+
+                {/* VIEW ALL */}
+
+                <div className="products-button">
+
+                    <Link
+                        to="/products"
+                        className="primary-button"
+                    >
+                        View All Products
+                        <ArrowRight size={17} />
+                    </Link>
+
+                </div>
+
+            </section>
+
+
+            {/* ==================================
+                CTA
+                ================================== */}
+
+            <section className="cta-section">
+
+                <div className="cta-content">
+
+                    <p>
+                        SHOPHUB
+                    </p>
+
+                    <h2>
+                        Ready to Start Shopping?
+                    </h2>
+
+                    <span>
+                        Explore our collection and find
+                        something you'll love.
+                    </span>
+
+                    <Link
+                        to="/products"
+                        className="cta-button"
+                    >
+                        Start Shopping
+                        <ArrowRight size={17} />
+                    </Link>
+
+                </div>
+
+            </section>
+
+
+            {/* ==================================
+                FOOTER
+                ================================== */}
+
+            <footer className="home-footer">
+
+                <div className="footer-brand">
+
+                    <h3>
+                        Shop<span>Hub</span>
+                    </h3>
+
+                    <p>
+                        Your simple online shopping destination.
+                    </p>
+
+                </div>
+
+
+                <div className="footer-links">
+
+                    <Link to="/">
+                        Home
+                    </Link>
+
+                    <Link to="/products">
+                        Products
+                    </Link>
+
+                    <Link to="/cart">
+                        Cart
+                    </Link>
+
+                </div>
+
+
+                <div className="footer-copy">
+
+                    <p>
+                        © 2026 ShopHub. All rights reserved.
+                    </p>
+
+                </div>
+
+            </footer>
+
+        </div>
+
+    );
+
+}
+
+
+export default Home;

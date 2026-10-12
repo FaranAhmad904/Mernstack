@@ -1,0 +1,230 @@
+/* ==========================================
+   ADMIN ORDERS PAGE
+========================================== */
+
+.admin-orders-page {
+    padding: 35px;
+    min-height: 100vh;
+    background: #f7f7f7;
+}
+
+/* ==========================================
+   HEADER
+========================================== */
+
+.orders-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.orders-label {
+    margin: 0 0 5px;
+    color: #e91e63;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.orders-header h1 {
+    margin: 0;
+    font-size: 32px;
+}
+
+.orders-header span {
+    color: #777;
+}
+
+/* ==========================================
+   BUTTONS
+========================================== */
+
+.refresh-button,
+.retry-button {
+    border: none;
+    background: #e91e63;
+    color: white;
+    padding: 11px 20px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.refresh-button:hover,
+.retry-button:hover {
+    opacity: 0.9;
+}
+
+/* ==========================================
+   ORDER LIST
+========================================== */
+
+.orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+/* ==========================================
+   ORDER CARD
+========================================== */
+
+.admin-order-card {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+}
+
+/* ==========================================
+   ORDER HEADER
+========================================== */
+
+.order-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.order-card-header h3 {
+    margin: 0 0 7px;
+}
+
+.order-card-header p {
+    margin: 0;
+    color: #777;
+    font-size: 14px;
+}
+
+/* ==========================================
+   STATUS
+========================================== */
+
+.order-status select {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 7px;
+    cursor: pointer;
+    background: white;
+}
+
+/* ==========================================
+   CUSTOMER INFORMATION
+========================================== */
+
+.customer-info {
+    padding: 20px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.customer-info h4,
+.order-items h4 {
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.customer-info p {
+    margin: 7px 0;
+    color: #555;
+}
+
+/* ==========================================
+   ORDER ITEMS
+========================================== */
+
+.order-items {
+    padding: 20px 0;
+}
+
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 14px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.order-item p {
+    margin: 5px 0 0;
+    color: #777;
+}
+
+/* ==========================================
+   TOTAL
+========================================== */
+
+.order-total {
+    display: flex;
+    justify-content: space-between;
+
+    padding-top: 20px;
+
+    font-size: 20px;
+}
+
+.order-total strong {
+    color: #e91e63;
+}
+
+/* ==========================================
+   NO ORDERS
+========================================== */
+
+.no-orders {
+    background: white;
+    padding: 60px 30px;
+    text-align: center;
+    border-radius: 12px;
+}
+
+.no-orders h2 {
+    margin-bottom: 10px;
+}
+
+.no-orders p {
+    color: #777;
+}
+
+/* ==========================================
+   ERROR
+========================================== */
+
+.orders-error {
+    color: #d00000;
+    margin-bottom: 15px;
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 700px) {
+
+    .admin-orders-page {
+        padding: 20px;
+    }
+
+    .orders-header {
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .order-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .order-status {
+        width: 100%;
+    }
+
+    .order-status select {
+        width: 100%;
+    }
+}
