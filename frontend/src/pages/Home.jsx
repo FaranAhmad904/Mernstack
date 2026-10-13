@@ -1,3 +1,4 @@
+
 // ==========================================
 // IMPORTS
 // ==========================================
@@ -249,14 +250,14 @@ function Home() {
 
             {/* ==================================
                 NAVBAR
-                ================================== */}
+            ================================== */}
 
             <Navbar />
 
 
             {/* ==================================
                 PAGE CONTAINER
-                ================================== */}
+            ================================== */}
 
             <main
                 className="home-snap-container"
@@ -266,7 +267,7 @@ function Home() {
 
                 {/* ==================================
                     SECTION 1 — HERO
-                    ================================== */}
+                ================================== */}
 
                 <section
                     className={`snap-section hero-section ${
@@ -490,7 +491,7 @@ function Home() {
 
                 {/* ==================================
                     SECTION 2 — CATEGORIES
-                    ================================== */}
+                ================================== */}
 
                 <section
                     className={`snap-section category-section ${
@@ -532,7 +533,7 @@ function Home() {
                                 (category, index) => (
 
                                     <Link
-                                        to="/products"
+                                        to={`/products?category=${encodeURIComponent(category.name)}`}
                                         className="category-card"
                                         key={category.name}
                                         style={{
@@ -595,7 +596,7 @@ function Home() {
 
                 {/* ==================================
                     SECTION 3 — PRODUCTS
-                    ================================== */}
+                ================================== */}
 
                 <section
                     className={`snap-section product-section ${
@@ -787,7 +788,7 @@ function Home() {
 
                 {/* ==================================
                     SECTION 4 — EXPERIENCE
-                    ================================== */}
+                ================================== */}
 
                 <section
                     className={`snap-section experience-section ${
@@ -939,7 +940,7 @@ function Home() {
 
                 {/* ==================================
                     SECTION 5 — CTA
-                    ================================== */}
+                ================================== */}
 
                 <section
                     className={`snap-section final-section ${
@@ -998,7 +999,7 @@ function Home() {
                         </strong>
 
                         <span>
-                            © 2026 ShopHub
+                            © {new Date().getFullYear()} ShopHub
                         </span>
 
                     </footer>
@@ -1010,7 +1011,7 @@ function Home() {
 
             {/* ==================================
                 SIDE NAVIGATION
-                ================================== */}
+            ================================== */}
 
             <div className="section-navigation">
 
@@ -1051,7 +1052,7 @@ function Home() {
 
             {/* ==================================
                 LEFT / RIGHT ARROWS
-                ================================== */}
+            ================================== */}
 
             {activeSection > 0 && (
 

@@ -1,14 +1,16 @@
 /* ==========================================
    ADMIN USERS PAGE
+   Modern ShopHub Theme — Violet & Orange
 ========================================== */
 
 .admin-users-page {
-    padding: 30px;
+    width: 100%;
     min-height: 100%;
-    background: #f7f7f9;
+    padding: 30px;
     box-sizing: border-box;
+    background: #f5f6f8;
+    color: #252735;
 }
-
 
 /* ==========================================
    HEADER
@@ -18,110 +20,148 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+    gap: 20px;
     margin-bottom: 28px;
 }
 
 .users-label {
-    margin: 0 0 6px;
-    color: #e91e63;
-    font-size: 12px;
-    font-weight: 700;
+    margin: 0 0 7px;
+    color: #6558ed;
+    font-size: 11px;
+    font-weight: 750;
     letter-spacing: 1.5px;
+    text-transform: uppercase;
 }
 
 .users-header h1 {
     margin: 0;
+    color: #252735;
     font-size: 30px;
-    font-weight: 700;
-    color: #222;
+    font-weight: 750;
+    letter-spacing: -0.7px;
 }
 
 .users-header span {
     display: block;
-    margin-top: 7px;
-    color: #777;
+    margin-top: 8px;
+    color: #858b9b;
     font-size: 14px;
+    line-height: 1.6;
 }
-
 
 /* ==========================================
    REFRESH BUTTON
 ========================================== */
 
 .users-refresh-button {
-    border: none;
-    background: #e91e63;
-    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-shrink: 0;
     padding: 11px 20px;
-    border-radius: 7px;
-    font-size: 14px;
-    font-weight: 600;
+    border: 1px solid #6558ed;
+    border-radius: 9px;
+    background: #6558ed;
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 650;
     cursor: pointer;
-    transition: 0.2s ease;
+    box-shadow: 0 3px 8px rgba(101, 88, 237, 0.15);
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
 }
 
 .users-refresh-button:hover {
-    background: #d81b60;
+    background: #5145d4;
+    border-color: #5145d4;
+    box-shadow: 0 5px 12px rgba(101, 88, 237, 0.22);
     transform: translateY(-1px);
 }
 
+.users-refresh-button:active {
+    transform: translateY(0);
+}
+
+.users-refresh-button:focus-visible {
+    outline: 3px solid rgba(101, 88, 237, 0.2);
+    outline-offset: 3px;
+}
 
 /* ==========================================
    USERS COUNT CARD
 ========================================== */
 
 .users-count-card {
-    width: 250px;
     display: flex;
     align-items: center;
-    gap: 15px;
-    background: white;
-    border: 1px solid #ededed;
-    border-radius: 10px;
-    padding: 18px 20px;
-    margin-bottom: 25px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    gap: 16px;
+    width: 270px;
     box-sizing: border-box;
+    padding: 20px;
+    margin-bottom: 25px;
+    background: #ffffff;
+    border: 1px solid #edf0f4;
+    border-radius: 13px;
+    box-shadow: 0 3px 12px rgba(35, 38, 60, 0.04);
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.users-count-card:hover {
+    border-color: #e0dcff;
+    box-shadow: 0 7px 18px rgba(35, 38, 60, 0.06);
+    transform: translateY(-2px);
 }
 
 .users-count-icon {
-    width: 48px;
-    height: 48px;
+    width: 49px;
+    height: 49px;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 9px;
-    background: #fff0f5;
-    color: #e91e63;
+    flex-shrink: 0;
+    border-radius: 12px;
+    background: #f0efff;
+    color: #6558ed;
     font-size: 22px;
 }
 
 .users-count-card p {
-    margin: 0 0 3px;
-    color: #777;
-    font-size: 13px;
+    margin: 0 0 5px;
+    color: #858b9b;
+    font-size: 12px;
+    font-weight: 500;
 }
 
 .users-count-card h2 {
     margin: 0;
-    color: #222;
-    font-size: 25px;
-    font-weight: 700;
+    color: #252735;
+    font-size: 26px;
+    font-weight: 750;
+    line-height: 1.3;
 }
-
 
 /* ==========================================
    TABLE CONTAINER
 ========================================== */
 
 .users-table-container {
-    background: white;
-    border: 1px solid #e9e9e9;
-    border-radius: 10px;
+    width: 100%;
+    background: #ffffff;
+    border: 1px solid #edf0f4;
+    border-radius: 13px;
     overflow-x: auto;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 3px 12px rgba(35, 38, 60, 0.035);
+    scrollbar-width: thin;
+    scrollbar-color: #d8d3ff #f8f7ff;
 }
-
 
 /* ==========================================
    TABLE
@@ -129,55 +169,56 @@
 
 .users-table {
     width: 100%;
-    border-collapse: collapse;
     min-width: 850px;
+    border-collapse: separate;
+    border-spacing: 0;
 }
 
 .users-table thead {
-    background: #fafafa;
+    background: #f8f9fc;
 }
 
 .users-table th {
-    padding: 15px 18px;
+    padding: 16px 18px;
+    border-bottom: 1px solid #edf0f4;
+    color: #73798a;
+    font-size: 11px;
+    font-weight: 750;
     text-align: left;
-    border-bottom: 1px solid #e8e8e8;
-    color: #666;
-    font-size: 12px;
-    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    white-space: nowrap;
 }
 
 .users-table td {
     padding: 17px 18px;
-    border-bottom: 1px solid #eeeeee;
-    color: #444;
-    font-size: 14px;
+    border-bottom: 1px solid #f0f1f5;
+    color: #626879;
+    font-size: 13px;
+    line-height: 1.6;
     vertical-align: middle;
 }
 
 .users-table tbody tr {
-    transition: background 0.2s ease;
+    transition: background 0.18s ease;
 }
 
 .users-table tbody tr:hover {
-    background: #fffafd;
+    background: #faf9ff;
 }
 
 .users-table tbody tr:last-child td {
     border-bottom: none;
 }
 
-
 /* ==========================================
    USER NAME
 ========================================== */
 
 .users-table td strong {
-    color: #222;
-    font-weight: 600;
+    color: #343747;
+    font-weight: 650;
 }
-
 
 /* ==========================================
    ROLE BADGES
@@ -188,23 +229,25 @@
     align-items: center;
     justify-content: center;
     min-width: 65px;
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 700;
+    padding: 6px 11px;
+    border-radius: 7px;
+    font-size: 10px;
+    font-weight: 750;
     letter-spacing: 0.4px;
+    line-height: 1.3;
+    text-transform: capitalize;
+    white-space: nowrap;
 }
 
 .role-badge.user {
-    background: #f1f3f5;
-    color: #555;
+    background: #f0f2f6;
+    color: #626879;
 }
 
 .role-badge.admin {
-    background: #ffe5ef;
-    color: #d81b60;
+    background: #f0efff;
+    color: #5145d4;
 }
-
 
 /* ==========================================
    USER ACTIONS
@@ -218,80 +261,103 @@
 
 .edit-user-button,
 .delete-user-button {
-    border: none;
-    padding: 8px 14px;
-    border-radius: 6px;
-    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 13px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    font-family: inherit;
     font-size: 12px;
-    font-weight: 600;
-    transition: 0.2s ease;
+    font-weight: 650;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
 }
 
-
-/* EDIT */
-
 .edit-user-button {
-    background: #f2f3f5;
-    color: #333;
+    background: #f0efff;
+    border-color: #e7e4ff;
+    color: #5145d4;
 }
 
 .edit-user-button:hover {
-    background: #e5e7ea;
+    background: #e5e2ff;
+    border-color: #d8d3ff;
+    transform: translateY(-1px);
 }
 
-
-/* DELETE */
-
 .delete-user-button {
-    background: #fff0f0;
-    color: #d32f2f;
+    background: #fff1f1;
+    border-color: #f8dddd;
+    color: #c83c3c;
 }
 
 .delete-user-button:hover {
-    background: #ffe0e0;
+    background: #ffe3e3;
+    border-color: #f2c7c7;
+    transform: translateY(-1px);
 }
 
+.edit-user-button:focus-visible,
+.delete-user-button:focus-visible {
+    outline: 3px solid rgba(101, 88, 237, 0.18);
+    outline-offset: 2px;
+}
 
 /* ==========================================
    EMPTY STATE
 ========================================== */
 
 .no-users {
-    background: white;
-    border: 1px solid #e9e9e9;
-    border-radius: 10px;
-    padding: 60px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    min-height: 220px;
+    box-sizing: border-box;
+    padding: 45px 20px;
+    background: #ffffff;
+    border: 1px solid #edf0f4;
+    border-radius: 13px;
     text-align: center;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 3px 12px rgba(35, 38, 60, 0.035);
 }
 
 .no-users h2 {
-    margin: 0 0 8px;
-    color: #333;
+    margin: 0 0 9px;
+    color: #343747;
     font-size: 20px;
+    font-weight: 700;
 }
 
 .no-users p {
+    max-width: 420px;
     margin: 0;
-    color: #888;
-    font-size: 14px;
+    color: #858b9b;
+    font-size: 13px;
+    line-height: 1.7;
 }
-
 
 /* ==========================================
    ERROR MESSAGE
 ========================================== */
 
 .users-error {
-    background: #fff1f1;
-    border: 1px solid #ffd4d4;
-    color: #c62828;
     padding: 14px 16px;
-    border-radius: 7px;
-    margin-bottom: 15px;
-    font-size: 14px;
+    margin-bottom: 18px;
+    border: 1px solid #f3d2d2;
+    border-radius: 9px;
+    background: #fff3f3;
+    color: #c62828;
+    font-size: 13px;
+    line-height: 1.6;
 }
-
 
 /* ==========================================
    EDIT USER MODAL OVERLAY
@@ -300,15 +366,17 @@
 .edit-user-overlay {
     position: fixed;
     inset: 0;
+    z-index: 1000;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 20px;
-    background: rgba(20, 20, 25, 0.55);
-    backdrop-filter: blur(3px);
-    z-index: 1000;
+    box-sizing: border-box;
+    background: rgba(27, 29, 43, 0.55);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    overflow-y: auto;
 }
-
 
 /* ==========================================
    EDIT USER MODAL
@@ -317,26 +385,28 @@
 .edit-user-modal {
     width: 100%;
     max-width: 480px;
-    background: white;
-    border-radius: 12px;
-    padding: 30px;
+    max-height: calc(100vh - 40px);
     box-sizing: border-box;
-    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.18);
-    animation: modalOpen 0.2s ease;
+    padding: 30px;
+    background: #ffffff;
+    border: 1px solid rgba(237, 240, 244, 0.9);
+    border-radius: 15px;
+    box-shadow: 0 20px 60px rgba(20, 22, 40, 0.2);
+    overflow-y: auto;
+    animation: modalOpen 0.22s ease;
 }
 
 @keyframes modalOpen {
     from {
         opacity: 0;
-        transform: translateY(-10px);
+        transform: translateY(-10px) scale(0.985);
     }
 
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
     }
 }
-
 
 /* ==========================================
    MODAL HEADER
@@ -346,86 +416,123 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 25px;
+    gap: 15px;
+    margin-bottom: 26px;
 }
 
 .edit-user-header p {
-    margin: 0 0 5px;
-    color: #e91e63;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1.3px;
+    margin: 0 0 7px;
+    color: #6558ed;
+    font-size: 10px;
+    font-weight: 750;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
 }
 
 .edit-user-header h2 {
     margin: 0;
-    color: #222;
-    font-size: 22px;
+    color: #252735;
+    font-size: 23px;
+    font-weight: 750;
+    letter-spacing: -0.4px;
 }
-
 
 /* ==========================================
    CLOSE BUTTON
 ========================================== */
 
 .close-modal-button {
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
     display: flex;
     justify-content: center;
     align-items: center;
-    border: none;
-    border-radius: 6px;
-    background: #f4f4f5;
-    color: #666;
-    font-size: 23px;
+    flex-shrink: 0;
+    border: 1px solid #edf0f4;
+    border-radius: 9px;
+    background: #f5f6f8;
+    color: #73798a;
+    font-size: 22px;
+    line-height: 1;
     cursor: pointer;
-    transition: 0.2s ease;
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease;
 }
 
 .close-modal-button:hover {
-    background: #e9e9ea;
-    color: #222;
+    background: #f0efff;
+    border-color: #e0dcff;
+    color: #5145d4;
 }
 
+.close-modal-button:focus-visible {
+    outline: 3px solid rgba(101, 88, 237, 0.2);
+    outline-offset: 2px;
+}
 
 /* ==========================================
-   FORM
+   EDIT FORM
 ========================================== */
 
 .edit-form-group {
-    margin-bottom: 19px;
+    margin-bottom: 20px;
 }
 
 .edit-form-group label {
     display: block;
-    margin-bottom: 7px;
-    color: #444;
+    margin-bottom: 8px;
+    color: #343747;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 650;
+    line-height: 1.5;
 }
 
 .edit-form-group input,
 .edit-form-group select {
+    display: block;
     width: 100%;
-    height: 44px;
-    padding: 0 12px;
+    height: 45px;
+    padding: 0 13px;
     box-sizing: border-box;
-    border: 1px solid #dcdcdc;
-    border-radius: 7px;
-    background: white;
-    color: #333;
+    border: 1px solid #e1e4eb;
+    border-radius: 9px;
+    background: #ffffff;
+    color: #252735;
+    font-family: inherit;
     font-size: 14px;
-    transition: 0.2s ease;
+    outline: none;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.edit-form-group input::placeholder {
+    color: #a0a5b2;
+}
+
+.edit-form-group input:hover,
+.edit-form-group select:hover {
+    border-color: #c9cdd8;
 }
 
 .edit-form-group input:focus,
 .edit-form-group select:focus {
-    outline: none;
-    border-color: #e91e63;
-    box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.08);
+    border-color: #6558ed;
+    box-shadow: 0 0 0 3px rgba(101, 88, 237, 0.12);
 }
 
+.edit-form-group select {
+    cursor: pointer;
+}
+
+.edit-form-group input:disabled,
+.edit-form-group select:disabled {
+    background: #f5f6f8;
+    color: #858b9b;
+    cursor: not-allowed;
+}
 
 /* ==========================================
    MODAL BUTTONS
@@ -435,64 +542,106 @@
     display: flex;
     justify-content: flex-end;
     gap: 10px;
-    margin-top: 25px;
-    padding-top: 20px;
-    border-top: 1px solid #eeeeee;
+    margin-top: 27px;
+    padding-top: 21px;
+    border-top: 1px solid #edf0f4;
 }
 
 .cancel-edit-button,
 .save-user-button {
-    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
     min-width: 110px;
     padding: 11px 18px;
-    border-radius: 7px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    font-family: inherit;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 650;
     cursor: pointer;
-    transition: 0.2s ease;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
 }
 
 .cancel-edit-button {
-    background: #f1f1f1;
-    color: #444;
+    background: #f5f6f8;
+    border-color: #e7e9ef;
+    color: #555b6c;
 }
 
 .cancel-edit-button:hover {
-    background: #e5e5e5;
+    background: #e9ebf1;
+    border-color: #dce0e8;
 }
 
 .save-user-button {
-    background: #e91e63;
-    color: white;
+    background: #6558ed;
+    border-color: #6558ed;
+    color: #ffffff;
+    box-shadow: 0 3px 8px rgba(101, 88, 237, 0.15);
 }
 
 .save-user-button:hover {
-    background: #d81b60;
+    background: #5145d4;
+    border-color: #5145d4;
+    box-shadow: 0 5px 12px rgba(101, 88, 237, 0.2);
+    transform: translateY(-1px);
 }
 
+.cancel-edit-button:disabled,
+.save-user-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.cancel-edit-button:focus-visible,
+.save-user-button:focus-visible {
+    outline: 3px solid rgba(101, 88, 237, 0.2);
+    outline-offset: 2px;
+}
 
 /* ==========================================
    LOADING STATE
 ========================================== */
 
 .admin-users-page > p {
-    color: #777;
+    color: #73798a;
     font-size: 14px;
+    line-height: 1.7;
 }
 
-
 /* ==========================================
-   RESPONSIVE
+   RESPONSIVE — TABLETS
 ========================================== */
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
+    .admin-users-page {
+        padding: 24px;
+    }
 
+    .users-header h1 {
+        font-size: 27px;
+    }
+
+    .users-count-card {
+        width: 100%;
+        max-width: 320px;
+    }
+}
+
+@media (max-width: 768px) {
     .admin-users-page {
         padding: 20px;
     }
 
     .users-header {
-        align-items: flex-start;
         gap: 15px;
     }
 
@@ -501,23 +650,85 @@
     }
 
     .users-count-card {
-        width: 100%;
+        max-width: none;
+        padding: 17px;
     }
 
     .edit-user-modal {
-        padding: 22px;
+        padding: 25px;
+    }
+
+    .users-table th,
+    .users-table td {
+        padding: 14px 15px;
     }
 }
 
+/* ==========================================
+   RESPONSIVE — MOBILE
+========================================== */
 
 @media (max-width: 500px) {
+    .admin-users-page {
+        padding: 16px;
+    }
 
     .users-header {
         flex-direction: column;
+        align-items: stretch;
+        gap: 17px;
+        margin-bottom: 22px;
+    }
+
+    .users-header h1 {
+        font-size: 23px;
+    }
+
+    .users-header span {
+        font-size: 13px;
     }
 
     .users-refresh-button {
         width: 100%;
+    }
+
+    .users-count-card {
+        gap: 13px;
+        padding: 16px;
+        margin-bottom: 20px;
+    }
+
+    .users-count-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 20px;
+    }
+
+    .users-count-card h2 {
+        font-size: 23px;
+    }
+
+    .users-table-container {
+        border-radius: 10px;
+    }
+
+    .edit-user-overlay {
+        align-items: center;
+        padding: 14px;
+    }
+
+    .edit-user-modal {
+        max-height: calc(100vh - 28px);
+        padding: 21px;
+        border-radius: 13px;
+    }
+
+    .edit-user-header {
+        margin-bottom: 22px;
+    }
+
+    .edit-user-header h2 {
+        font-size: 21px;
     }
 
     .edit-modal-buttons {
@@ -527,5 +738,62 @@
     .cancel-edit-button,
     .save-user-button {
         width: 100%;
+    }
+}
+
+/* ==========================================
+   SMALL MOBILE
+========================================== */
+
+@media (max-width: 360px) {
+    .admin-users-page {
+        padding: 12px;
+    }
+
+    .users-header h1 {
+        font-size: 21px;
+    }
+
+    .users-count-card {
+        padding: 14px;
+    }
+
+    .edit-user-modal {
+        padding: 17px;
+    }
+
+    .edit-user-header h2 {
+        font-size: 19px;
+    }
+}
+
+/* ==========================================
+   ACCESSIBILITY — REDUCED MOTION
+========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .users-count-card,
+    .users-refresh-button,
+    .users-table tbody tr,
+    .edit-user-button,
+    .delete-user-button,
+    .close-modal-button,
+    .edit-form-group input,
+    .edit-form-group select,
+    .cancel-edit-button,
+    .save-user-button {
+        transition: none;
+    }
+
+    .edit-user-modal {
+        animation: none;
+    }
+
+    .users-count-card:hover,
+    .users-refresh-button:hover,
+    .edit-user-button:hover,
+    .delete-user-button:hover,
+    .save-user-button:hover {
+        transform: none;
     }
 }

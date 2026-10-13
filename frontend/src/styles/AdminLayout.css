@@ -6,7 +6,9 @@
     display: flex;
     min-height: 100vh;
     width: 100%;
-    background: #f7f7f9;
+    background: #f5f6f8;
+    color: #252735;
+    box-sizing: border-box;
 }
 
 
@@ -18,14 +20,10 @@
     width: 250px;
     min-width: 250px;
     min-height: 100vh;
-
     background: #ffffff;
-
-    border-right: 1px solid #e7e7e7;
-
+    border-right: 1px solid #edf0f4;
     display: flex;
     flex-direction: column;
-
     box-sizing: border-box;
 }
 
@@ -36,16 +34,12 @@
 
 .admin-logo {
     height: 75px;
-
+    min-height: 75px;
     display: flex;
     align-items: center;
-
     gap: 12px;
-
     padding: 0 22px;
-
-    border-bottom: 1px solid #eeeeee;
-
+    border-bottom: 1px solid #f0f1f5;
     box-sizing: border-box;
 }
 
@@ -53,20 +47,16 @@
 /* LOGO ICON */
 
 .admin-logo-icon {
-    width: 38px;
-    height: 38px;
-
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
-
-    background: #e91e63;
-
+    background: #6558ed;
     color: #ffffff;
-
-    border-radius: 8px;
-
+    border-radius: 11px;
     flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(101, 88, 237, 0.2);
 }
 
 
@@ -74,26 +64,20 @@
 
 .admin-logo h2 {
     margin: 0;
-
-    color: #222222;
-
+    color: #252735;
     font-size: 19px;
-
-    font-weight: 700;
-
-    line-height: 1.2;
+    font-weight: 750;
+    letter-spacing: -0.4px;
+    line-height: 1.25;
 }
 
 .admin-logo span {
     display: block;
-
-    margin-top: 3px;
-
-    color: #999999;
-
+    margin-top: 4px;
+    color: #858b9b;
     font-size: 11px;
-
     font-weight: 500;
+    line-height: 1.4;
 }
 
 
@@ -103,9 +87,7 @@
 
 .admin-navigation {
     flex: 1;
-
-    padding: 24px 14px;
-
+    padding: 25px 14px;
     box-sizing: border-box;
 }
 
@@ -115,19 +97,16 @@
 ========================================== */
 
 .sidebar-section-title {
-    margin: 0 10px 9px;
-
-    color: #9a9a9a;
-
+    margin: 0 10px 10px;
+    color: #969bad;
     font-size: 10px;
-
-    font-weight: 700;
-
+    font-weight: 750;
     letter-spacing: 1.3px;
+    text-transform: uppercase;
 }
 
 .sidebar-section-title.second {
-    margin-top: 28px;
+    margin-top: 29px;
 }
 
 
@@ -136,35 +115,25 @@
 ========================================== */
 
 .admin-nav-link {
+    position: relative;
     width: 100%;
-
-    min-height: 44px;
-
+    min-height: 45px;
     display: flex;
-
     align-items: center;
-
     gap: 12px;
-
     padding: 0 13px;
-
-    margin-bottom: 4px;
-
+    margin-bottom: 5px;
     box-sizing: border-box;
-
-    border-radius: 7px;
-
-    color: #666666;
-
+    border: 1px solid transparent;
+    border-radius: 10px;
+    color: #686e80;
     text-decoration: none;
-
-    font-size: 14px;
-
-    font-weight: 500;
-
+    font-size: 13px;
+    font-weight: 550;
     transition:
         background 0.2s ease,
         color 0.2s ease,
+        border-color 0.2s ease,
         transform 0.2s ease;
 }
 
@@ -174,28 +143,43 @@
 .admin-nav-link svg {
     width: 19px;
     height: 19px;
-
     flex-shrink: 0;
+    transition: color 0.2s ease;
 }
 
 
 /* HOVER */
 
 .admin-nav-link:hover {
-    background: #fff4f7;
+    background: #f8f7ff;
+    color: #6558ed;
+    border-color: #f0efff;
+}
 
-    color: #e91e63;
+.admin-nav-link:active {
+    transform: scale(0.985);
 }
 
 
 /* ACTIVE */
 
 .admin-nav-link.active {
-    background: #ffeaf1;
+    background: #f0efff;
+    border-color: #e7e4ff;
+    color: #6558ed;
+    font-weight: 700;
+}
 
-    color: #e91e63;
+.admin-nav-link.active svg {
+    color: #6558ed;
+}
 
-    font-weight: 600;
+
+/* KEYBOARD ACCESSIBILITY */
+
+.admin-nav-link:focus-visible {
+    outline: 3px solid rgba(101, 88, 237, 0.2);
+    outline-offset: 2px;
 }
 
 
@@ -205,25 +189,17 @@
 
 .sidebar-footer {
     display: flex;
-
     align-items: center;
-
-    gap: 9px;
-
+    gap: 10px;
     margin: 0 15px 20px;
-
-    padding: 12px 13px;
-
-    border-radius: 7px;
-
-    background: #f7f7f7;
-
-    color: #777777;
-
+    padding: 13px;
+    border: 1px solid #edf0f4;
+    border-radius: 10px;
+    background: #f8f9fb;
+    color: #73798a;
     font-size: 12px;
-
-    font-weight: 500;
-
+    font-weight: 550;
+    line-height: 1.5;
     box-sizing: border-box;
 }
 
@@ -231,13 +207,11 @@
 /* ONLINE DOT */
 
 .sidebar-status-dot {
-    width: 7px;
-    height: 7px;
-
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-
-    background: #28a745;
-
+    background: #28a765;
+    box-shadow: 0 0 0 3px rgba(40, 167, 101, 0.12);
     flex-shrink: 0;
 }
 
@@ -248,20 +222,10 @@
 
 .admin-main {
     flex: 1;
-
     min-width: 0;
-
     min-height: 100vh;
-
-    background: #f7f7f9;
-
-    /*
-       This creates comfortable space
-       between sidebar and page content.
-    */
-
+    background: #f5f6f8;
     padding: 30px 35px;
-
     box-sizing: border-box;
 }
 
@@ -272,7 +236,6 @@
 
 .admin-main > * {
     width: 100%;
-
     box-sizing: border-box;
 }
 
@@ -282,6 +245,10 @@
 ========================================== */
 
 @media (min-width: 1400px) {
+    .admin-sidebar {
+        width: 260px;
+        min-width: 260px;
+    }
 
     .admin-main {
         padding: 35px 45px;
@@ -293,11 +260,10 @@
    TABLET
 ========================================== */
 
-@media (max-width: 900px) {
-
+@media (max-width: 1100px) {
     .admin-sidebar {
-        width: 220px;
-        min-width: 220px;
+        width: 225px;
+        min-width: 225px;
     }
 
     .admin-main {
@@ -305,15 +271,17 @@
     }
 
     .admin-logo {
-        padding: 0 17px;
+        padding: 0 18px;
     }
 
     .admin-navigation {
-        padding: 20px 11px;
+        padding: 22px 11px;
     }
 
     .admin-nav-link {
-        font-size: 13px;
+        gap: 10px;
+        padding: 0 11px;
+        font-size: 12px;
     }
 }
 
@@ -323,46 +291,60 @@
 ========================================== */
 
 @media (max-width: 700px) {
-
     .admin-layout {
         flex-direction: column;
     }
 
     .admin-sidebar {
         width: 100%;
-        min-width: 100%;
-
+        min-width: 0;
         min-height: auto;
-
         border-right: none;
-
-        border-bottom: 1px solid #e7e7e7;
+        border-bottom: 1px solid #edf0f4;
     }
 
     .admin-logo {
         height: 65px;
+        min-height: 65px;
+        padding: 0 18px;
+    }
+
+    .admin-logo-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .admin-logo h2 {
+        font-size: 18px;
     }
 
     .admin-navigation {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px;
         padding: 12px;
     }
 
-    .sidebar-section-title {
-        display: none;
-    }
-
+    .sidebar-section-title,
     .sidebar-section-title.second {
         display: none;
     }
 
     .admin-nav-link {
         display: inline-flex;
-
         width: auto;
-
-        margin-right: 5px;
-
+        min-height: 40px;
+        gap: 8px;
+        margin: 0;
         padding: 0 12px;
+        border-radius: 9px;
+        font-size: 12px;
+    }
+
+    .admin-nav-link svg {
+        width: 17px;
+        height: 17px;
     }
 
     .sidebar-footer {
@@ -370,7 +352,8 @@
     }
 
     .admin-main {
-        padding: 20px;
+        min-height: auto;
+        padding: 22px 20px;
     }
 }
 
@@ -380,20 +363,71 @@
 ========================================== */
 
 @media (max-width: 450px) {
+    .admin-logo {
+        height: 60px;
+        min-height: 60px;
+    }
 
-    .admin-main {
-        padding: 15px;
+    .admin-navigation {
+        gap: 7px;
+        padding: 10px;
+    }
+
+    .admin-nav-link {
+        width: 42px;
+        min-width: 42px;
+        height: 42px;
+        min-height: 42px;
+        justify-content: center;
+        gap: 0;
+        padding: 0;
     }
 
     .admin-nav-link span {
         display: none;
     }
 
+    .admin-nav-link svg {
+        width: 19px;
+        height: 19px;
+    }
+
+    .admin-main {
+        padding: 17px 13px;
+    }
+}
+
+
+/* ==========================================
+   EXTRA SMALL SCREEN
+========================================== */
+
+@media (max-width: 350px) {
+    .admin-navigation {
+        gap: 5px;
+        padding: 9px;
+    }
+
     .admin-nav-link {
-        width: 42px;
+        width: 38px;
+        min-width: 38px;
+        height: 38px;
+        min-height: 38px;
+    }
 
-        justify-content: center;
+    .admin-main {
+        padding: 14px 10px;
+    }
+}
 
-        padding: 0;
+
+/* ==========================================
+   REDUCED MOTION
+========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .admin-nav-link,
+    .admin-nav-link svg {
+        transition: none;
     }
 }
