@@ -1010,3 +1010,188 @@
     scroll-behavior: auto !important;
   }
 }
+
+
+
+/* ==========================================
+   WISHLIST TOAST NOTIFICATION
+========================================== */
+
+.wishlist-toast
+{
+    position: fixed;
+    top: 90px;
+    right: 28px;
+    z-index: 9999;
+
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+
+    width: min(390px, calc(100vw - 32px));
+    padding: 18px;
+
+    background: #ffffff;
+    border: 1px solid #e8eaf0;
+    border-radius: 14px;
+
+    box-shadow:
+        0 12px 35px rgba(15, 23, 42, 0.12),
+        0 3px 10px rgba(15, 23, 42, 0.05);
+
+    animation: wishlistToastEnter 0.3s ease-out;
+}
+
+.wishlist-toast.toast-success
+{
+    border-left: 4px solid #16a34a;
+}
+
+.wishlist-toast.toast-error
+{
+    border-left: 4px solid #dc2626;
+}
+
+.wishlist-toast-icon
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+
+    border-radius: 12px;
+}
+
+.toast-success .wishlist-toast-icon
+{
+    color: #16a34a;
+    background: #dcfce7;
+}
+
+.toast-error .wishlist-toast-icon
+{
+    color: #dc2626;
+    background: #fee2e2;
+}
+
+.wishlist-toast-content
+{
+    flex: 1;
+    min-width: 0;
+}
+
+.wishlist-toast-content strong
+{
+    display: block;
+    margin: 1px 0 5px;
+
+    color: #111827;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.wishlist-toast-content p
+{
+    margin: 0;
+
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.6;
+
+    overflow-wrap: anywhere;
+}
+
+.wishlist-toast-content a
+{
+    display: inline-block;
+    margin-top: 9px;
+
+    color: #e11d48;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.wishlist-toast-content a:hover
+{
+    color: #be123c;
+    text-decoration: underline;
+}
+
+.wishlist-toast-close
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+
+    color: #94a3b8;
+    background: transparent;
+
+    cursor: pointer;
+    transition:
+        color 0.2s ease,
+        background 0.2s ease;
+}
+
+.wishlist-toast-close:hover
+{
+    color: #334155;
+    background: #f1f5f9;
+}
+
+@keyframes wishlistToastEnter
+{
+    from
+    {
+        opacity: 0;
+        transform: translateX(24px);
+    }
+
+    to
+    {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ==========================================
+   MOBILE RESPONSIVE
+========================================== */
+
+@media (max-width: 480px)
+{
+    .wishlist-toast
+    {
+        top: 76px;
+        right: 12px;
+
+        width: calc(100vw - 24px);
+        padding: 14px;
+        gap: 11px;
+    }
+
+    .wishlist-toast-icon
+    {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce)
+{
+    .wishlist-toast
+    {
+        animation: none;
+    }
+}

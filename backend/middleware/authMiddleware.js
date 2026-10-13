@@ -9,29 +9,23 @@ const jwt = require("jsonwebtoken");
 // AUTHENTICATION MIDDLEWARE
 // ==========================================
 
-const authMiddleware = (req, res, next) => {
-
-    try {
-
+const authMiddleware = (req, res, next) =>
+{
+    try
+    {
         // ==========================================
         // GET AUTHORIZATION HEADER
         // ==========================================
 
-        const authHeader =
-            req.headers.authorization;
-
-        console.log(
-            "AUTH HEADER:",
-            authHeader
-        );
+        const authHeader = req.headers.authorization;
 
 
         // ==========================================
-        // CHECK HEADER
+        // CHECK AUTHORIZATION HEADER
         // ==========================================
 
-        if (!authHeader) {
-
+        if (!authHeader)
+        {
             return res.status(401).json({
                 message: "No token provided"
             });
@@ -42,12 +36,11 @@ const authMiddleware = (req, res, next) => {
         // GET TOKEN
         // ==========================================
 
-        const token =
-            authHeader.split(" ")[1];
+        const token = authHeader.split(" ")[1];
 
 
-        if (!token) {
-
+        if (!token)
+        {
             return res.status(401).json({
                 message: "Invalid token format"
             });
@@ -64,17 +57,14 @@ const authMiddleware = (req, res, next) => {
         );
 
 
-        console.log(
-            "DECODED TOKEN:",
-            decoded
-        );
-
-
         // ==========================================
         // SAVE USER INFORMATION
         // ==========================================
 
-        req.user = decoded;
+        req.user = {
+            ...decoded,
+            id: decoded.userId || decoded.id || decoded._id
+        };
 
 
         // ==========================================
@@ -82,9 +72,9 @@ const authMiddleware = (req, res, next) => {
         // ==========================================
 
         next();
-
-    } catch (error) {
-
+    }
+    catch (error)
+    {
         console.error(
             "JWT ERROR:",
             error.message
@@ -97,5 +87,9 @@ const authMiddleware = (req, res, next) => {
     }
 };
 
+
+// ==========================================
+// EXPORT MIDDLEWARE
+// ==========================================
 
 module.exports = authMiddleware;

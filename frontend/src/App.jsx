@@ -17,6 +17,7 @@ import ProductDetails from "./pages/ProductDetails";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import OrderSuccess from "./pages/OrderSuccess";
+import Wishlist from "./pages/Wishlist";
 
 
 // ==========================================
@@ -103,6 +104,12 @@ function App() {
                     path="/register"
                     element={<Register />}
                 />
+
+                <Route
+    path="/wishlist"
+    element={<Wishlist />}
+/>
+
 
 
                 {/* ==================================

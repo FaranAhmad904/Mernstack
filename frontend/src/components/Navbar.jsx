@@ -1,6 +1,5 @@
-// ==========================================
-// IMPORTS
-// ==========================================
+
+import { useEffect, useState } from "react";
 
 import { Link, useNavigate } from "react-router-dom";
 
@@ -9,35 +8,71 @@ import {
     User,
     LogIn,
     UserPlus,
-    LogOut
+    LogOut,
+    Heart
 } from "lucide-react";
 
 import { useAuth } from "../context/AuthContext";
 
+import api from "../services/api";
+
 import "../styles/Navbar.css";
 
 
-// ==========================================
-// NAVBAR COMPONENT
-// ==========================================
-
-function Navbar() {
-
+function Navbar()
+{
     const { user, logout } = useAuth();
 
     const navigate = useNavigate();
+
+    const [wishlistCount, setWishlistCount] = useState(0);
+
+
+    // ==========================================
+    // LOAD WISHLIST COUNT
+    // ==========================================
+
+    useEffect(() =>
+    {
+        if (!user)
+        {
+            setWishlistCount(0);
+            return;
+        }
+
+        const fetchWishlistCount = async () =>
+        {
+            try
+            {
+                const response = await api.get("/wishlist");
+
+                setWishlistCount(
+                    response.data.products?.length || 0
+                );
+            }
+            catch (error)
+            {
+                console.error(
+                    "WISHLIST COUNT ERROR:",
+                    error
+                );
+            }
+        };
+
+        fetchWishlistCount();
+
+    }, [user]);
 
 
     // ==========================================
     // LOGOUT
     // ==========================================
 
-    const handleLogout = () => {
-
+    const handleLogout = () =>
+    {
         logout();
 
         navigate("/login");
-
     };
 
 
@@ -46,12 +81,7 @@ function Navbar() {
     // ==========================================
 
     return (
-
         <nav className="shop-navbar">
-
-            {/* ==================================
-                LOGO
-                ================================== */}
 
             <Link
                 to="/"
@@ -60,10 +90,6 @@ function Navbar() {
                 Shop<span>Hub</span>
             </Link>
 
-
-            {/* ==================================
-                MAIN NAVIGATION
-                ================================== */}
 
             <div className="shop-nav-links">
 
@@ -78,11 +104,35 @@ function Navbar() {
             </div>
 
 
-            {/* ==================================
-                RIGHT SIDE
-                ================================== */}
-
             <div className="shop-nav-actions">
+
+                {/* WISHLIST */}
+
+                {user && (
+                    <Link
+                        to="/wishlist"
+                        className="wishlist-nav-link"
+                    >
+
+                        <span className="wishlist-nav-icon">
+                            <Heart
+                                size={19}
+                                strokeWidth={2}
+                            />
+
+                            {wishlistCount > 0 && (
+                                <span className="wishlist-nav-count">
+                                    {wishlistCount > 99
+                                        ? "99+"
+                                        : wishlistCount}
+                                </span>
+                            )}
+                        </span>
+
+                        <span>Wishlist</span>
+
+                    </Link>
+                )}
 
 
                 {/* CART */}
@@ -97,32 +147,23 @@ function Navbar() {
                         strokeWidth={2}
                     />
 
-                    <span>
-                        Cart
-                    </span>
+                    <span>Cart</span>
 
                 </Link>
 
 
-                {/* ==================================
-                    LOGGED IN USER
-                    ================================== */}
+                {/* LOGGED-IN USER */}
 
                 {user ? (
-
                     <>
-
-                        {/* USER */}
 
                         <div className="navbar-user">
 
                             <div className="navbar-user-icon">
-
                                 <User
                                     size={17}
                                     strokeWidth={2}
                                 />
-
                             </div>
 
                             <span>
@@ -132,10 +173,9 @@ function Navbar() {
                         </div>
 
 
-                        {/* LOGOUT */}
-
                         <button
                             className="navbar-logout"
+                            type="button"
                             onClick={handleLogout}
                         >
 
@@ -144,19 +184,13 @@ function Navbar() {
                                 strokeWidth={2}
                             />
 
-                            <span>
-                                Logout
-                            </span>
+                            <span>Logout</span>
 
                         </button>
 
                     </>
-
                 ) : (
-
                     <>
-
-                        {/* LOGIN */}
 
                         <Link
                             to="/login"
@@ -168,14 +202,10 @@ function Navbar() {
                                 strokeWidth={2}
                             />
 
-                            <span>
-                                Login
-                            </span>
+                            <span>Login</span>
 
                         </Link>
 
-
-                        {/* REGISTER */}
 
                         <Link
                             to="/register"
@@ -187,22 +217,17 @@ function Navbar() {
                                 strokeWidth={2}
                             />
 
-                            <span>
-                                Register
-                            </span>
+                            <span>Register</span>
 
                         </Link>
 
                     </>
-
                 )}
 
             </div>
 
         </nav>
-
     );
-
 }
 
 

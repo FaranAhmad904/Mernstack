@@ -11,7 +11,7 @@ const orderRoutes = require("./routes/orderRoutes");
 const userRoutes = require("./routes/userRoutes");
 
 const reviewRoutes = require("./routes/reviewRoutes");
-
+const wishlistRoutes = require("./routes/wishlistRoutes");
 
 
 const app = express();
@@ -45,6 +45,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
 
 app.use("/api/orders", orderRoutes);
+app.use("/api/wishlist", wishlistRoutes);
 
 
 // ==========================================
