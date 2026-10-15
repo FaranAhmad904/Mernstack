@@ -274,6 +274,80 @@ const updateOrderStatus = async(req,res)=>
 
 }
 
+
+//cancel order
+
+const cancelOrder = async (req,res) =>
+{
+    try
+    {
+        const order = await Order.findOne(
+            {
+                _id: req.params.id,
+                user:req.user.userId
+            }
+        )
+
+        if(!order)
+        {
+            return res.status(404).json({
+                message:"order not found"
+            })
+        }
+
+          if (!["Pending", "Processing"].includes(order.status))
+        {
+            return res.status(400).json(
+            {
+                message: `This order cannot be cancelled because its status is ${order.status}.`
+            });
+        }
+
+        //restore product stock
+
+        for(const item of order.items)
+        {
+            if(item.product)
+            {
+                await Product.updateOne(
+                    {_id: item.product},
+                    {$inc: {stock: item.quantity}}
+                )
+            }
+        }
+
+        order.status = "Cancelled"
+
+        await order.save();
+
+        return res.status(200).json({
+
+            message: "Order cancelled successfully.",
+            order
+
+        })
+    }catch(error)
+    {
+        console.error("CANCEL ORDER ERROR:", error);
+
+        return res.status(500).json(
+        {
+            message: "Unable to cancel order."
+        });
+    }
+    
+}
+
+
+
+
+
+
+
+
+
+
+
 module.exports = {
 
     createOrder,
@@ -282,6 +356,8 @@ module.exports = {
 
     getAllOrders,
 
-    updateOrderStatus
+    updateOrderStatus,
+
+    cancelOrder
 
 };

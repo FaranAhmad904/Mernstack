@@ -1,0 +1,301 @@
+/* ==========================================
+   ORDER TRACKING PANEL
+========================================== */
+
+.order-tracking-panel
+{
+    margin-top: 20px;
+    padding: 22px;
+    background: #faf9ff;
+    border: 1px solid #e9e2f8;
+    border-radius: 16px;
+}
+
+
+/* ==========================================
+   TRACKING HEADER
+========================================== */
+
+.tracking-header
+{
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 25px;
+}
+
+.tracking-header h3
+{
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0 0 7px;
+    color: #242038;
+    font-size: 17px;
+}
+
+.tracking-header h3 svg
+{
+    color: #7c3aed;
+}
+
+.tracking-header p
+{
+    margin: 0;
+    color: #777386;
+    font-size: 13px;
+}
+
+.tracking-status
+{
+    padding: 7px 12px;
+    background: #f0e8ff;
+    color: #6d28d9;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+
+/* ==========================================
+   TIMELINE
+========================================== */
+
+.tracking-timeline
+{
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: 24px;
+}
+
+.tracking-step
+{
+    position: relative;
+    display: flex;
+    gap: 14px;
+    min-height: 76px;
+}
+
+.tracking-step:not(:last-child)::before
+{
+    content: "";
+    position: absolute;
+    top: 28px;
+    left: 13px;
+    width: 2px;
+    height: calc(100% - 15px);
+    background: #dedbe7;
+}
+
+.tracking-step-completed:not(:last-child)::before
+{
+    background: #8b5cf6;
+}
+
+.tracking-step-marker
+{
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    background: #eeecf4;
+    color: #9b96aa;
+    border-radius: 50%;
+}
+
+.tracking-step-completed .tracking-step-marker
+{
+    background: #ede4ff;
+    color: #7c3aed;
+}
+
+.tracking-step-current .tracking-step-marker
+{
+    background: #7c3aed;
+    color: #ffffff;
+    box-shadow: 0 0 0 5px #ede4ff;
+}
+
+.tracking-step-content
+{
+    padding: 3px 0 22px;
+}
+
+.tracking-step-content strong
+{
+    display: block;
+    margin-bottom: 5px;
+    color: #8a8599;
+    font-size: 14px;
+}
+
+.tracking-step-completed .tracking-step-content strong
+{
+    color: #31244d;
+}
+
+.tracking-step-content p
+{
+    margin: 0;
+    color: #858092;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+
+/* ==========================================
+   ESTIMATED DELIVERY
+========================================== */
+
+.tracking-estimate
+{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    background: #ffffff;
+    border: 1px solid #e7e0f4;
+    border-radius: 12px;
+}
+
+.tracking-estimate > svg
+{
+    color: #7c3aed;
+}
+
+.tracking-estimate div
+{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.tracking-estimate span
+{
+    color: #777386;
+    font-size: 12px;
+}
+
+.tracking-estimate strong
+{
+    color: #302348;
+    font-size: 14px;
+}
+
+
+/* ==========================================
+   CANCEL ORDER
+========================================== */
+
+.tracking-cancel-section
+{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid #e9e2f8;
+}
+
+.tracking-cancel-section p
+{
+    flex: 1;
+    min-width: 180px;
+    margin: 0;
+    color: #777386;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.tracking-cancel-button
+{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 15px;
+    background: #ffffff;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tracking-cancel-button:hover:not(:disabled)
+{
+    background: #fef2f2;
+    border-color: #f87171;
+}
+
+.tracking-cancel-button:disabled
+{
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+
+/* ==========================================
+   CANCELLED ORDER
+========================================== */
+
+.tracking-cancelled
+{
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    color: #dc2626;
+}
+
+.tracking-cancelled strong
+{
+    display: block;
+    margin-bottom: 5px;
+    font-size: 15px;
+}
+
+.tracking-cancelled p
+{
+    margin: 0;
+    color: #777386;
+    font-size: 13px;
+}
+
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 500px)
+{
+    .order-tracking-panel
+    {
+        padding: 16px;
+    }
+
+    .tracking-header
+    {
+        flex-direction: column;
+    }
+
+    .tracking-cancel-section
+    {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .tracking-cancel-button
+    {
+        width: 100%;
+    }
+}

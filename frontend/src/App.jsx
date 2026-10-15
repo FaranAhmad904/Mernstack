@@ -20,6 +20,14 @@ import OrderSuccess from "./pages/OrderSuccess";
 import Wishlist from "./pages/Wishlist";
 import MyOrders from "./pages/MyOrders";
 
+
+// ==========================================
+// ROUTE PROTECTION
+// ==========================================
+
+import ProtectedRoute from "./components/ProtectedRoute";
+
+
 // ==========================================
 // ADMIN COMPONENTS
 // ==========================================
@@ -52,8 +60,8 @@ import "./App.css";
 // APP
 // ==========================================
 
-function App() {
-
+function App()
+{
     return (
 
         <BrowserRouter>
@@ -62,7 +70,7 @@ function App() {
 
 
                 {/* ==================================
-                    CUSTOMER ROUTES
+                    PUBLIC CUSTOMER ROUTES
                     ================================== */}
 
                 <Route
@@ -81,21 +89,6 @@ function App() {
                 />
 
                 <Route
-                    path="/cart"
-                    element={<Cart />}
-                />
-
-                <Route
-                    path="/checkout"
-                    element={<Checkout />}
-                />
-
-                <Route
-                    path="/order-success/:orderId"
-                    element={<OrderSuccess />}
-                />
-
-                <Route
                     path="/login"
                     element={<Login />}
                 />
@@ -105,18 +98,47 @@ function App() {
                     element={<Register />}
                 />
 
-                <Route
-    path="/wishlist"
-    element={<Wishlist />}
-/>
 
-      <Route
-    path="/my-orders"
-    element={<MyOrders />}
-/>
+                {/* ==================================
+                    PROTECTED CUSTOMER ROUTES
+                    LOGIN REQUIRED
+                    ================================== */}
+
+                <Route
+                    element={<ProtectedRoute />}
+                >
+
+                    <Route
+                        path="/cart"
+                        element={<Cart />}
+                    />
+
+                    <Route
+                        path="/checkout"
+                        element={<Checkout />}
+                    />
+
+                    <Route
+                        path="/order-success/:orderId"
+                        element={<OrderSuccess />}
+                    />
+
+                    <Route
+                        path="/wishlist"
+                        element={<Wishlist />}
+                    />
+
+                    <Route
+                        path="/my-orders"
+                        element={<MyOrders />}
+                    />
+
+                </Route>
+
 
                 {/* ==================================
                     ADMIN ROUTES
+                    ADMIN ACCESS REQUIRED
                     ================================== */}
 
                 <Route
@@ -128,10 +150,7 @@ function App() {
                     }
                 >
 
-                    {/* ==================================
-                        ADMIN DASHBOARD
-                        URL: /admin
-                        ================================== */}
+                    {/* ADMIN DASHBOARD */}
 
                     <Route
                         index
@@ -139,10 +158,7 @@ function App() {
                     />
 
 
-                    {/* ==================================
-                        ADMIN PRODUCTS
-                        URL: /admin/products
-                        ================================== */}
+                    {/* ADMIN PRODUCTS */}
 
                     <Route
                         path="products"
@@ -150,10 +166,7 @@ function App() {
                     />
 
 
-                    {/* ==================================
-                        ADD PRODUCT
-                        URL: /admin/products/new
-                        ================================== */}
+                    {/* ADD PRODUCT */}
 
                     <Route
                         path="products/new"
@@ -161,10 +174,7 @@ function App() {
                     />
 
 
-                    {/* ==================================
-                        EDIT PRODUCT
-                        URL: /admin/products/edit/:id
-                        ================================== */}
+                    {/* EDIT PRODUCT */}
 
                     <Route
                         path="products/edit/:id"
@@ -172,10 +182,7 @@ function App() {
                     />
 
 
-                    {/* ==================================
-                        ADMIN ORDERS
-                        URL: /admin/orders
-                        ================================== */}
+                    {/* ADMIN ORDERS */}
 
                     <Route
                         path="orders"
@@ -183,10 +190,7 @@ function App() {
                     />
 
 
-                    {/* ==================================
-                        ADMIN USERS
-                        URL: /admin/users
-                        ================================== */}
+                    {/* ADMIN USERS */}
 
                     <Route
                         path="users"
@@ -194,10 +198,7 @@ function App() {
                     />
 
 
-                    {/* ==================================
-                        ADMIN REPORTS
-                        URL: /admin/reports
-                        ================================== */}
+                    {/* ADMIN REPORTS */}
 
                     <Route
                         path="reports"
@@ -209,7 +210,8 @@ function App() {
             </Routes>
 
         </BrowserRouter>
+
     );
 }
 
-export default App;
+export default App; 

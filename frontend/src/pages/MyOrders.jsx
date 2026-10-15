@@ -2,9 +2,16 @@
 // IMPORTS
 // ==========================================
 
-import { useEffect, useMemo, useState } from "react";
+import {
+    useEffect,
+    useMemo,
+    useState
+} from "react";
 
-import { Link } from "react-router-dom";
+import {
+    Link
+} from "react-router-dom";
+
 import Navbar from "../components/Navbar";
 
 import {
@@ -26,6 +33,8 @@ import {
 
 import api from "../services/api";
 
+import OrderTracking from "../components/OrderTracking";
+
 import "../styles/MyOrders.css";
 
 
@@ -35,7 +44,9 @@ import "../styles/MyOrders.css";
 
 function MyOrders()
 {
-     <Navbar/>
+    // ==========================================
+    // STATE
+    // ==========================================
 
     const [orders, setOrders] = useState([]);
 
@@ -48,6 +59,8 @@ function MyOrders()
     const [statusFilter, setStatusFilter] = useState("All");
 
     const [sortOrder, setSortOrder] = useState("newest");
+
+    const [cancellingId, setCancellingId] = useState(null);
 
 
     // ==========================================
@@ -62,7 +75,9 @@ function MyOrders()
 
             setError("");
 
-            const response = await api.get("/orders/my-orders");
+            const response = await api.get(
+                "/orders/my-orders"
+            );
 
             setOrders(response.data.orders || []);
         }
@@ -86,7 +101,7 @@ function MyOrders()
 
 
     // ==========================================
-    // LOAD ORDERS ON PAGE OPEN
+    // LOAD ORDERS WHEN PAGE OPENS
     // ==========================================
 
     useEffect(() =>
@@ -97,10 +112,85 @@ function MyOrders()
 
 
     // ==========================================
+    // CANCEL ORDER
+    // ==========================================
+
+    const handleCancelOrder = async (orderId) =>
+    {
+        const confirmed = window.confirm(
+            "Are you sure you want to cancel this order?"
+        );
+
+
+        if (!confirmed)
+        {
+            return;
+        }
+
+
+        try
+        {
+            setCancellingId(orderId);
+
+
+            // SEND CANCELLATION REQUEST TO BACKEND
+
+            const response = await api.patch(
+                `/orders/${orderId}/cancel`
+            );
+
+
+            // UPDATE THE CANCELLED ORDER IN REACT STATE
+
+            setOrders((currentOrders) =>
+            {
+                return currentOrders.map((order) =>
+                {
+                    if (order._id === orderId)
+                    {
+                        return {
+                            ...order,
+                            ...response.data.order
+                        };
+                    }
+
+                    return order;
+                });
+            });
+
+
+            // SHOW SUCCESS MESSAGE
+
+            window.alert(
+                response.data.message ||
+                "Order cancelled successfully."
+            );
+        }
+        catch (error)
+        {
+            console.error(
+                "CANCEL ORDER ERROR:",
+                error
+            );
+
+            window.alert(
+                error.response?.data?.message ||
+                "Unable to cancel your order. Please try again."
+            );
+        }
+        finally
+        {
+            setCancellingId(null);
+        }
+    };
+
+
+    // ==========================================
     // ORDER SUMMARY
     // ==========================================
 
     const totalOrders = orders.length;
+
 
     const totalItems = orders.reduce(
         (total, order) =>
@@ -115,6 +205,7 @@ function MyOrders()
         },
         0
     );
+
 
     const totalSpent = orders.reduce(
         (total, order) =>
@@ -138,6 +229,9 @@ function MyOrders()
     {
         let result = [...orders];
 
+
+        // FILTER BY STATUS
+
         if (statusFilter !== "All")
         {
             result = result.filter(
@@ -145,9 +239,14 @@ function MyOrders()
             );
         }
 
+
+        // SEARCH BY ORDER ID OR PRODUCT NAME
+
         if (searchTerm.trim())
         {
-            const search = searchTerm.toLowerCase();
+            const search = searchTerm
+                .trim()
+                .toLowerCase();
 
             result = result.filter(order =>
             {
@@ -156,30 +255,47 @@ function MyOrders()
                 const productMatch = order.items.some(
                     item =>
                     {
-                        return item.name
+                        return (item.name || "")
                             .toLowerCase()
                             .includes(search);
                     }
                 );
 
-                return orderId.includes(search) || productMatch;
+                return (
+                    orderId.includes(search) ||
+                    orderId.slice(-8).includes(search) ||
+                    productMatch
+                );
             });
         }
 
+
+        // SORT BY ORDER DATE
+
         result.sort((a, b) =>
         {
-            const firstDate = new Date(a.createdAt).getTime();
+            const firstDate = new Date(
+                a.createdAt
+            ).getTime();
 
-            const secondDate = new Date(b.createdAt).getTime();
+            const secondDate = new Date(
+                b.createdAt
+            ).getTime();
 
             return sortOrder === "newest"
                 ? secondDate - firstDate
                 : firstDate - secondDate;
         });
 
+
         return result;
 
-    }, [orders, searchTerm, statusFilter, sortOrder]);
+    }, [
+        orders,
+        searchTerm,
+        statusFilter,
+        sortOrder
+    ]);
 
 
     // ==========================================
@@ -212,7 +328,7 @@ function MyOrders()
 
 
     // ==========================================
-    // STATUS CLASS
+    // STATUS CSS CLASS
     // ==========================================
 
     const getStatusClass = (status) =>
@@ -286,21 +402,25 @@ function MyOrders()
     if (loading)
     {
         return (
-            <div className="my-orders-page">
+            <>
+                <Navbar />
 
-                <div className="my-orders-loading">
+                <div className="my-orders-page">
 
-                    <div className="orders-loading-spinner"></div>
+                    <div className="my-orders-loading">
 
-                    <h3>Loading your orders</h3>
+                        <div className="orders-loading-spinner"></div>
 
-                    <p>
-                        Please wait while we fetch your order history.
-                    </p>
+                        <h3>Loading your orders</h3>
+
+                        <p>
+                            Please wait while we fetch your order history.
+                        </p>
+
+                    </div>
 
                 </div>
-
-            </div>
+            </>
         );
     }
 
@@ -311,250 +431,117 @@ function MyOrders()
 
     return (
         <>
-        <Navbar/>
-        
-       
-        <div className="my-orders-page">
+            <Navbar />
 
-            <div className="my-orders-container">
+            <div className="my-orders-page">
+
+                <div className="my-orders-container">
 
 
-                {/* ==================================
-                    PAGE HEADER
+                    {/* ==================================
+                        PAGE HEADER
                     ================================== */}
 
-                <div className="my-orders-header">
+                    <div className="my-orders-header">
 
-                    <div className="my-orders-heading">
+                        <div className="my-orders-heading">
 
-                        <div className="orders-heading-icon">
-                            <Package size={25} />
-                        </div>
+                            <div className="orders-heading-icon">
+                                <Package size={25} />
+                            </div>
 
-                        <div>
+                            <div>
 
-                            <h1>My Orders</h1>
+                                <h1>My Orders</h1>
 
-                            <p>
-                                Track your purchases and manage your orders.
-                            </p>
+                                <p>
+                                    Track your purchases and manage your orders.
+                                </p>
 
-                        </div>
-
-                    </div>
-
-
-                    <Link
-                        to="/products"
-                        className="orders-shop-button"
-                    >
-
-                        <ShoppingBag size={17} />
-
-                        Continue Shopping
-
-                        <ArrowRight size={16} />
-
-                    </Link>
-
-                </div>
-
-
-                {/* ==================================
-                    SUMMARY CARDS
-                    ================================== */}
-
-                <div className="orders-summary-grid">
-
-                    <div className="orders-summary-card">
-
-                        <div className="orders-summary-icon purple">
-                            <Package size={22} />
-                        </div>
-
-                        <div className="orders-summary-info">
-
-                            <span>Total Orders</span>
-
-                            <h2>{totalOrders}</h2>
-
-                            <p>All your purchases</p>
+                            </div>
 
                         </div>
 
-                    </div>
 
-
-                    <div className="orders-summary-card">
-
-                        <div className="orders-summary-icon orange">
-                            <ShoppingBag size={22} />
-                        </div>
-
-                        <div className="orders-summary-info">
-
-                            <span>Items Purchased</span>
-
-                            <h2>{totalItems}</h2>
-
-                            <p>Total items ordered</p>
-
-                        </div>
-
-                    </div>
-
-
-                    <div className="orders-summary-card">
-
-                        <div className="orders-summary-icon green">
-                            <Wallet size={22} />
-                        </div>
-
-                        <div className="orders-summary-info">
-
-                            <span>Order Value</span>
-
-                            <h2>{formatPrice(totalSpent)}</h2>
-
-                            <p>Excluding cancelled orders</p>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                {/* ==================================
-                    ERROR MESSAGE
-                    ================================== */}
-
-                {error && (
-                    <div className="orders-error-message">
-
-                        <XCircle size={20} />
-
-                        <span>{error}</span>
-
-                        <button
-                            type="button"
-                            onClick={fetchOrders}
+                        <Link
+                            to="/products"
+                            className="orders-shop-button"
                         >
-                            <RefreshCw size={15} />
-                            Retry
-                        </button>
+                            <ShoppingBag size={17} />
+
+                            Continue Shopping
+
+                            <ArrowRight size={16} />
+                        </Link>
 
                     </div>
-                )}
 
 
-                {/* ==================================
-                    ORDER HISTORY
+                    {/* ==================================
+                        SUMMARY CARDS
                     ================================== */}
 
-                <div className="orders-history-section">
+                    <div className="orders-summary-grid">
 
+                        {/* TOTAL ORDERS */}
 
-                    {/* SECTION HEADER */}
+                        <div className="orders-summary-card">
 
-                    <div className="orders-history-heading">
+                            <div className="orders-summary-icon purple">
+                                <Package size={22} />
+                            </div>
 
-                        <div>
+                            <div className="orders-summary-info">
 
-                            <h2>Order History</h2>
+                                <span>Total Orders</span>
 
-                            <p>
-                                View your previous orders and their current status.
-                            </p>
+                                <h2>{totalOrders}</h2>
 
-                        </div>
+                                <p>All your purchases</p>
 
-                        <span className="orders-count-badge">
-                            {filteredOrders.length} Orders
-                        </span>
-
-                    </div>
-
-
-                    {/* ==================================
-                        SEARCH AND FILTERS
-                        ================================== */}
-
-                    <div className="orders-toolbar">
-
-                        <div className="orders-search">
-
-                            <Search size={19} />
-
-                            <input
-                                type="text"
-                                placeholder="Search order ID or product..."
-                                value={searchTerm}
-                                onChange={(event) =>
-                                {
-                                    setSearchTerm(event.target.value);
-                                }}
-                            />
+                            </div>
 
                         </div>
 
 
-                        <div className="orders-filter-group">
+                        {/* TOTAL ITEMS */}
 
-                            <select
-                                value={statusFilter}
-                                onChange={(event) =>
-                                {
-                                    setStatusFilter(event.target.value);
-                                }}
-                                aria-label="Filter orders by status"
-                            >
+                        <div className="orders-summary-card">
 
-                                <option value="All">
-                                    All Statuses
-                                </option>
+                            <div className="orders-summary-icon orange">
+                                <ShoppingBag size={22} />
+                            </div>
 
-                                <option value="Pending">
-                                    Pending
-                                </option>
+                            <div className="orders-summary-info">
 
-                                <option value="Processing">
-                                    Processing
-                                </option>
+                                <span>Items Purchased</span>
 
-                                <option value="Shipped">
-                                    Shipped
-                                </option>
+                                <h2>{totalItems}</h2>
 
-                                <option value="Delivered">
-                                    Delivered
-                                </option>
+                                <p>Total items ordered</p>
 
-                                <option value="Cancelled">
-                                    Cancelled
-                                </option>
+                            </div>
 
-                            </select>
+                        </div>
 
 
-                            <select
-                                value={sortOrder}
-                                onChange={(event) =>
-                                {
-                                    setSortOrder(event.target.value);
-                                }}
-                                aria-label="Sort orders by date"
-                            >
+                        {/* TOTAL ORDER VALUE */}
 
-                                <option value="newest">
-                                    Newest First
-                                </option>
+                        <div className="orders-summary-card">
 
-                                <option value="oldest">
-                                    Oldest First
-                                </option>
+                            <div className="orders-summary-icon green">
+                                <Wallet size={22} />
+                            </div>
 
-                            </select>
+                            <div className="orders-summary-info">
+
+                                <span>Order Value</span>
+
+                                <h2>{formatPrice(totalSpent)}</h2>
+
+                                <p>Excluding cancelled orders</p>
+
+                            </div>
 
                         </div>
 
@@ -562,302 +549,481 @@ function MyOrders()
 
 
                     {/* ==================================
-                        EMPTY ORDER HISTORY
-                        ================================== */}
+                        ERROR MESSAGE
+                    ================================== */}
 
-                    {!error && orders.length === 0 && (
+                    {error && (
+                        <div className="orders-error-message">
 
-                        <div className="orders-empty-state">
+                            <XCircle size={20} />
 
-                            <div className="orders-empty-icon">
-                                <ShoppingBag size={35} />
-                            </div>
-
-                            <h3>No orders yet</h3>
-
-                            <p>
-                                Your purchases will appear here once you place your first order.
-                            </p>
-
-                            <Link
-                                to="/products"
-                                className="orders-empty-button"
-                            >
-                                Explore Products
-                                <ArrowRight size={17} />
-                            </Link>
-
-                        </div>
-
-                    )}
-
-
-                    {/* ==================================
-                        NO FILTER RESULTS
-                        ================================== */}
-
-                    {orders.length > 0 && filteredOrders.length === 0 && (
-
-                        <div className="orders-empty-state">
-
-                            <div className="orders-empty-icon">
-                                <Search size={32} />
-                            </div>
-
-                            <h3>No matching orders</h3>
-
-                            <p>
-                                Try another search term or change your filters.
-                            </p>
+                            <span>{error}</span>
 
                             <button
                                 type="button"
-                                className="orders-reset-button"
-                                onClick={() =>
-                                {
-                                    setSearchTerm("");
-                                    setStatusFilter("All");
-                                }}
+                                onClick={fetchOrders}
                             >
-                                Clear Filters
+                                <RefreshCw size={15} />
+
+                                Retry
                             </button>
 
                         </div>
-
                     )}
 
 
                     {/* ==================================
-                        ORDER CARDS
+                        ORDER HISTORY
+                    ================================== */}
+
+                    <div className="orders-history-section">
+
+
+                        {/* SECTION HEADER */}
+
+                        <div className="orders-history-heading">
+
+                            <div>
+
+                                <h2>Order History</h2>
+
+                                <p>
+                                    View your previous orders and their current status.
+                                </p>
+
+                            </div>
+
+                            <span className="orders-count-badge">
+                                {filteredOrders.length} Orders
+                            </span>
+
+                        </div>
+
+
+                        {/* ==================================
+                            SEARCH AND FILTERS
                         ================================== */}
 
-                    <div className="orders-list">
+                        <div className="orders-toolbar">
 
-                        {filteredOrders.map(order =>
-                        (
-                            <article
-                                className="my-order-card"
-                                key={order._id}
-                            >
+                            <div className="orders-search">
 
+                                <Search size={19} />
 
-                                {/* ORDER CARD HEADER */}
+                                <input
+                                    type="text"
+                                    placeholder="Search order ID or product..."
+                                    value={searchTerm}
+                                    onChange={(event) =>
+                                    {
+                                        setSearchTerm(
+                                            event.target.value
+                                        );
+                                    }}
+                                />
 
-                                <div className="my-order-card-header">
-
-                                    <div className="my-order-reference">
-
-                                        <span className="my-order-label">
-                                            ORDER NUMBER
-                                        </span>
-
-                                        <h3>
-                                            #{order._id.slice(-8).toUpperCase()}
-                                        </h3>
-
-                                        <span className="my-order-date">
-
-                                            <CalendarDays size={14} />
-
-                                            {formatDate(order.createdAt)}
-
-                                        </span>
-
-                                    </div>
+                            </div>
 
 
-                                    <div
-                                        className={`my-order-status ${getStatusClass(order.status)}`}
-                                    >
+                            <div className="orders-filter-group">
 
-                                        {getStatusIcon(order.status)}
+                                {/* STATUS FILTER */}
 
-                                        <span>
-                                            {order.status}
-                                        </span>
+                                <select
+                                    value={statusFilter}
+                                    onChange={(event) =>
+                                    {
+                                        setStatusFilter(
+                                            event.target.value
+                                        );
+                                    }}
+                                    aria-label="Filter orders by status"
+                                >
+                                    <option value="All">
+                                        All Statuses
+                                    </option>
 
-                                    </div>
+                                    <option value="Pending">
+                                        Pending
+                                    </option>
 
+                                    <option value="Processing">
+                                        Processing
+                                    </option>
+
+                                    <option value="Shipped">
+                                        Shipped
+                                    </option>
+
+                                    <option value="Delivered">
+                                        Delivered
+                                    </option>
+
+                                    <option value="Cancelled">
+                                        Cancelled
+                                    </option>
+                                </select>
+
+
+                                {/* DATE SORT */}
+
+                                <select
+                                    value={sortOrder}
+                                    onChange={(event) =>
+                                    {
+                                        setSortOrder(
+                                            event.target.value
+                                        );
+                                    }}
+                                    aria-label="Sort orders by date"
+                                >
+                                    <option value="newest">
+                                        Newest First
+                                    </option>
+
+                                    <option value="oldest">
+                                        Oldest First
+                                    </option>
+                                </select>
+
+                            </div>
+
+                        </div>
+
+
+                        {/* ==================================
+                            EMPTY ORDER HISTORY
+                        ================================== */}
+
+                        {!error && orders.length === 0 && (
+
+                            <div className="orders-empty-state">
+
+                                <div className="orders-empty-icon">
+                                    <ShoppingBag size={35} />
                                 </div>
 
+                                <h3>No orders yet</h3>
 
-                                {/* ORDER PRODUCTS */}
+                                <p>
+                                    Your purchases will appear here once you place your first order.
+                                </p>
 
-                                <div className="my-order-products">
+                                <Link
+                                    to="/products"
+                                    className="orders-empty-button"
+                                >
+                                    Explore Products
 
-                                    {order.items.map((item, index) =>
-                                    (
+                                    <ArrowRight size={17} />
+                                </Link>
+
+                            </div>
+
+                        )}
+
+
+                        {/* ==================================
+                            NO FILTER RESULTS
+                        ================================== */}
+
+                        {orders.length > 0 &&
+                            filteredOrders.length === 0 && (
+
+                            <div className="orders-empty-state">
+
+                                <div className="orders-empty-icon">
+                                    <Search size={32} />
+                                </div>
+
+                                <h3>No matching orders</h3>
+
+                                <p>
+                                    Try another search term or change your filters.
+                                </p>
+
+                                <button
+                                    type="button"
+                                    className="orders-reset-button"
+                                    onClick={() =>
+                                    {
+                                        setSearchTerm("");
+
+                                        setStatusFilter("All");
+
+                                        setSortOrder("newest");
+                                    }}
+                                >
+                                    Clear Filters
+                                </button>
+
+                            </div>
+                        )}
+
+
+                        {/* ==================================
+                            ORDER CARDS
+                        ================================== */}
+
+                        <div className="orders-list">
+
+                            {filteredOrders.map(order =>
+                            (
+                                <article
+                                    className="my-order-card"
+                                    key={order._id}
+                                >
+
+
+                                    {/* ORDER CARD HEADER */}
+
+                                    <div className="my-order-card-header">
+
+                                        <div className="my-order-reference">
+
+                                            <span className="my-order-label">
+                                                ORDER NUMBER
+                                            </span>
+
+                                            <h3>
+                                                #{order._id.slice(-8).toUpperCase()}
+                                            </h3>
+
+                                            <span className="my-order-date">
+
+                                                <CalendarDays size={14} />
+
+                                                {formatDate(order.createdAt)}
+
+                                            </span>
+
+                                        </div>
+
+
                                         <div
-                                            className="my-order-product"
-                                            key={`${order._id}-${item.product?._id || item.name}-${index}`}
+                                            className={`my-order-status ${getStatusClass(order.status)}`}
                                         >
+                                            {getStatusIcon(order.status)}
 
-                                            <div className="my-order-product-image">
+                                            <span>
+                                                {order.status}
+                                            </span>
+                                        </div>
 
-                                                {item.product?.image ? (
+                                    </div>
 
-                                                    <img
-                                                        src={item.product.image}
-                                                        alt={item.name}
-                                                        loading="lazy"
-                                                    />
 
-                                                ) : (
+                                    {/* ORDER PRODUCTS */}
 
-                                                    <div className="my-order-image-unavailable">
-                                                        Image unavailable
-                                                    </div>
+                                    <div className="my-order-products">
 
-                                                )}
+                                        {order.items.map((item, index) =>
+                                        (
+                                            <div
+                                                className="my-order-product"
+                                                key={`${order._id}-${item.product?._id || item.name}-${index}`}
+                                            >
+
+                                                <div className="my-order-product-image">
+
+                                                    {item.product?.image ? (
+
+                                                        <img
+                                                            src={item.product.image}
+                                                            alt={item.name}
+                                                            loading="lazy"
+                                                        />
+
+                                                    ) : (
+
+                                                        <div className="my-order-image-unavailable">
+                                                            Image unavailable
+                                                        </div>
+
+                                                    )}
+
+                                                </div>
+
+
+                                                <div className="my-order-product-info">
+
+                                                    <h4>
+                                                        {item.name}
+                                                    </h4>
+
+                                                    <p>
+                                                        Product purchased from ShopHub
+                                                    </p>
+
+                                                    <span className="my-order-quantity">
+                                                        Qty: {item.quantity}
+                                                    </span>
+
+                                                </div>
+
+
+                                                <div className="my-order-product-price">
+
+                                                    <span>Price</span>
+
+                                                    <strong>
+                                                        {formatPrice(
+                                                            item.price * item.quantity
+                                                        )}
+                                                    </strong>
+
+                                                    <small>
+                                                        {formatPrice(item.price)} each
+                                                    </small>
+
+                                                </div>
 
                                             </div>
+                                        ))}
+
+                                    </div>
 
 
-                                            <div className="my-order-product-info">
+                                    {/* ==================================
+                                        ORDER DETAILS
+                                    ================================== */}
 
-                                                <h4>
-                                                    {item.name}
-                                                </h4>
+                                    <div className="my-order-details">
 
-                                                <p>
-                                                    Product purchased from ShopHub
-                                                </p>
+                                        {/* DELIVERY ADDRESS */}
 
-                                                <span className="my-order-quantity">
-                                                    Qty: {item.quantity}
-                                                </span>
+                                        <div className="my-order-detail-item">
 
+                                            <div className="my-order-detail-icon">
+                                                <MapPin size={17} />
                                             </div>
 
+                                            <div>
 
-                                            <div className="my-order-product-price">
-
-                                                <span>Price</span>
+                                                <span>Delivery Address</span>
 
                                                 <strong>
-                                                    {formatPrice(
-                                                        item.price * item.quantity
-                                                    )}
+                                                    {order.shippingAddress}
                                                 </strong>
 
                                                 <small>
-                                                    {formatPrice(item.price)} each
+                                                    {order.city}
                                                 </small>
 
                                             </div>
 
                                         </div>
-                                    ))}
-
-                                </div>
 
 
-                                {/* ORDER DETAILS */}
+                                        {/* PAYMENT METHOD */}
 
-                                <div className="my-order-details">
+                                        <div className="my-order-detail-item">
 
-                                    <div className="my-order-detail-item">
+                                            <div className="my-order-detail-icon">
+                                                <CreditCard size={17} />
+                                            </div>
 
-                                        <div className="my-order-detail-icon">
-                                            <MapPin size={17} />
-                                        </div>
+                                            <div>
 
-                                        <div>
+                                                <span>Payment Method</span>
 
-                                            <span>Delivery Address</span>
+                                                <strong>
+                                                    {order.paymentMethod === "COD"
+                                                        ? "Cash on Delivery"
+                                                        : order.paymentMethod}
+                                                </strong>
 
-                                            <strong>
-                                                {order.shippingAddress}
-                                            </strong>
-
-                                            <small>
-                                                {order.city}
-                                            </small>
+                                            </div>
 
                                         </div>
 
-                                    </div>
 
+                                        {/* PHONE NUMBER */}
 
-                                    <div className="my-order-detail-item">
+                                        <div className="my-order-detail-item">
 
-                                        <div className="my-order-detail-icon">
-                                            <CreditCard size={17} />
-                                        </div>
+                                            <div className="my-order-detail-icon">
+                                                <Phone size={17} />
+                                            </div>
 
-                                        <div>
+                                            <div>
 
-                                            <span>Payment Method</span>
+                                                <span>Contact Number</span>
 
-                                            <strong>
-                                                {order.paymentMethod === "COD"
-                                                    ? "Cash on Delivery"
-                                                    : order.paymentMethod}
-                                            </strong>
+                                                <strong>
+                                                    {order.phone || "Not provided"}
+                                                </strong>
+
+                                            </div>
 
                                         </div>
 
                                     </div>
 
 
-                                    <div className="my-order-detail-item">
+                                    {/* ==================================
+                                        ORDER FOOTER
+                                    ================================== */}
 
-                                        <div className="my-order-detail-icon">
-                                            <Phone size={17} />
-                                        </div>
+                                    <div className="my-order-card-footer">
 
-                                        <div>
+                                        <div className="my-order-total">
 
-                                            <span>Contact Number</span>
+                                            <span>Order Total</span>
 
                                             <strong>
-                                                {order.phone || "Not provided"}
+                                                {formatPrice(order.totalAmount)}
                                             </strong>
 
                                         </div>
 
-                                    </div>
 
-                                </div>
+                                        <div className="my-order-footer-note">
 
+                                            {order.status === "Cancelled"
+                                                ? <XCircle size={16} />
+                                                : <CheckCircle2 size={16} />
+                                            }
 
-                                {/* ORDER FOOTER */}
+                                            <span>
+                                                {order.status === "Cancelled"
+                                                    ? "This order has been cancelled"
+                                                    : "Order placed successfully"
+                                                }
+                                            </span>
 
-                                <div className="my-order-card-footer">
-
-                                    <div className="my-order-total">
-
-                                        <span>Order Total</span>
-
-                                        <strong>
-                                            {formatPrice(order.totalAmount)}
-                                        </strong>
-
-                                    </div>
-
-
-                                    <div className="my-order-footer-note">
-
-                                        <CheckCircle2 size={16} />
-
-                                        <span>
-                                            Order placed successfully
-                                        </span>
+                                        </div>
 
                                     </div>
 
-                                </div>
 
-                            </article>
-                        ))}
+                                    {/* ==================================
+                                        ORDER TRACKING AND CANCELLATION
+                                    ================================== */}
+
+                                    <OrderTracking
+                                        order={order}
+                                        onCancel={() =>
+                                        {
+                                            handleCancelOrder(
+                                                order._id
+                                            );
+                                        }}
+                                        cancelling={
+                                            cancellingId === order._id
+                                        }
+                                    />
+
+                                </article>
+                            ))}
+
+                        </div>
 
                     </div>
 
                 </div>
 
             </div>
-
-        </div>
         </>
     );
 }

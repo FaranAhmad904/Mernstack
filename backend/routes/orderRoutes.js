@@ -4,7 +4,8 @@ const {
     createOrder,
     getMyOrders,
     getAllOrders,
-    updateOrderStatus
+    updateOrderStatus,
+    cancelOrder
 } = require("../controllers/orderController");
 
 const authMiddleware = require("../middleware/authMiddleware");
@@ -52,6 +53,17 @@ router.put(
     authMiddleware,
     adminMiddleware,
     updateOrderStatus
+);
+
+
+// ==========================================
+// CUSTOMER ORDER CANCELLATION
+// ==========================================
+
+router.patch(
+    "/:id/cancel",
+    authMiddleware,
+    cancelOrder
 );
 
 
