@@ -18,7 +18,7 @@ import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import OrderSuccess from "./pages/OrderSuccess";
 import Wishlist from "./pages/Wishlist";
-
+import MyOrders from "./pages/MyOrders";
 
 // ==========================================
 // ADMIN COMPONENTS
@@ -110,7 +110,10 @@ function App() {
     element={<Wishlist />}
 />
 
-
+      <Route
+    path="/my-orders"
+    element={<MyOrders />}
+/>
 
                 {/* ==================================
                     ADMIN ROUTES

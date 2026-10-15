@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 
 import { Link, useNavigate } from "react-router-dom";
@@ -9,7 +8,8 @@ import {
     LogIn,
     UserPlus,
     LogOut,
-    Heart
+    Heart,
+    Package
 } from "lucide-react";
 
 import { useAuth } from "../context/AuthContext";
@@ -115,6 +115,7 @@ function Navbar()
                     >
 
                         <span className="wishlist-nav-icon">
+
                             <Heart
                                 size={19}
                                 strokeWidth={2}
@@ -127,9 +128,29 @@ function Navbar()
                                         : wishlistCount}
                                 </span>
                             )}
+
                         </span>
 
                         <span>Wishlist</span>
+
+                    </Link>
+                )}
+
+
+                {/* MY ORDERS */}
+
+                {user && (
+                    <Link
+                        to="/my-orders"
+                        className="my-orders-nav-link"
+                    >
+
+                        <Package
+                            size={19}
+                            strokeWidth={2}
+                        />
+
+                        <span>My Orders</span>
 
                     </Link>
                 )}
@@ -160,10 +181,12 @@ function Navbar()
                         <div className="navbar-user">
 
                             <div className="navbar-user-icon">
+
                                 <User
                                     size={17}
                                     strokeWidth={2}
                                 />
+
                             </div>
 
                             <span>

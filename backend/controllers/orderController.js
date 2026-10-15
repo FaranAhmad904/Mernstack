@@ -164,28 +164,37 @@ const createOrder = async(req,res)=>
 }
 
 //getmyorders
-
-const getMyOrders = async (req,res)=>
+const getMyOrders = async(req,res) =>
 {
     try
     {
         const orders = await Order.find({
-            user: req.user.userId
-        }).sort({createdAt: -1});
+            user:req.user.userId
+        }).populate("items.product","name image")
+        .sort({
+            createdAt: -1
+        })
 
-        res.json({
+        res.status(200).json({
             orders
         })
     }catch(error)
     {
-          console.error("GET MY ORDERS ERROR:", error);
-
-        res.status(500).json({
-            message: "Server error",
-            error: error.message
+        console.log("Error"),
+         console.error(
+            "GET MY ORDERS ERROR:",
+            error
+        );
+      
+          res.status(500).json({
+            message: "Failed to fetch orders"
         });
+        
+
     }
 }
+
+
 
 
 //getallorders
