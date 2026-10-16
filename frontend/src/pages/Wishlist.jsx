@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 
 import { Link, useNavigate } from "react-router-dom";
@@ -172,7 +171,9 @@ function Wishlist()
 
                     <div className="wishlist-empty">
 
-                        <Heart size={48} />
+                        <div className="empty-heart">
+                            <Heart size={42} />
+                        </div>
 
                         <h1>Your Wishlist</h1>
 
@@ -208,6 +209,22 @@ function Wishlist()
 
             <main className="wishlist-container">
 
+                {/* BREADCRUMB */}
+
+                <nav
+                    className="wishlist-breadcrumb"
+                    aria-label="Breadcrumb"
+                >
+                    <Link to="/">Home</Link>
+
+                    <span>/</span>
+
+                    <strong>Wishlist</strong>
+                </nav>
+
+
+                {/* PAGE HEADING */}
+
                 <div className="wishlist-heading">
 
                     <div className="wishlist-title">
@@ -218,13 +235,9 @@ function Wishlist()
 
                         <div>
 
-                            <p className="wishlist-eyebrow">
-                                YOUR PERSONAL COLLECTION
-                            </p>
-
                             <h1>My Wishlist</h1>
 
-                            <p>
+                            <p className="wishlist-subtitle">
                                 Keep the products you love
                                 in one place.
                             </p>
@@ -246,13 +259,13 @@ function Wishlist()
 
 
                 {error && (
-                    <div className="wishlist-alert error">
+                    <div className="wishlist-alert error" role="alert">
                         {error}
                     </div>
                 )}
 
                 {message && (
-                    <div className="wishlist-alert success">
+                    <div className="wishlist-alert success" role="status">
                         {message}
                     </div>
                 )}
@@ -316,6 +329,7 @@ function Wishlist()
                                             <img
                                                 src={product.image}
                                                 alt={product.name}
+                                                loading="lazy"
                                             />
                                         ) : (
                                             <div className="wishlist-no-image">
