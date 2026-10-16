@@ -1,18 +1,30 @@
+import {
+    useCallback,
+    useEffect,
+    useState
+} from "react";
 
-import { useCallback, useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import {
+    Link,
+    useNavigate,
+    useParams
+} from "react-router-dom";
 
 import api from "../services/api";
+
 import Navbar from "../components/Navbar";
+
 import { useCart } from "../context/CartContext";
 
 import "../styles/ProductDetails.css";
+
 
 // ==========================================
 // STAR DISPLAY
 // ==========================================
 
-function Stars({ rating = 0, interactive = false, onSelect }) {
+function Stars({ rating = 0, interactive = false, onSelect })
+{
     const selectedRating = Number(rating) || 0;
 
     return (
@@ -29,7 +41,11 @@ function Stars({ rating = 0, interactive = false, onSelect }) {
                 <button
                     key={star}
                     type="button"
-                    className={star <= selectedRating ? "star active" : "star"}
+                    className={
+                        star <= Math.round(selectedRating)
+                            ? "star active"
+                            : "star"
+                    }
                     disabled={!interactive}
                     onClick={() => onSelect?.(star)}
                     aria-label={`${star} ${star === 1 ? "star" : "stars"}`}
@@ -44,11 +60,13 @@ function Stars({ rating = 0, interactive = false, onSelect }) {
     );
 }
 
+
 // ==========================================
 // HELPERS
 // ==========================================
 
-function formatReviewDate(date) {
+function formatReviewDate(date)
+{
     if (!date) return "";
 
     const parsedDate = new Date(date);
@@ -62,24 +80,29 @@ function formatReviewDate(date) {
     });
 }
 
-function getTokenPayload() {
+function getTokenPayload()
+{
     const token = localStorage.getItem("token");
 
     if (!token) return null;
 
-    try {
+    try
+    {
         const base64 = token
             .split(".")[1]
             .replace(/-/g, "+")
             .replace(/_/g, "/");
 
         return JSON.parse(atob(base64));
-    } catch {
+    }
+    catch
+    {
         return null;
     }
 }
 
-function getCurrentUserId() {
+function getCurrentUserId()
+{
     const payload = getTokenPayload();
 
     return String(
@@ -90,27 +113,41 @@ function getCurrentUserId() {
     );
 }
 
-function getReviewUserId(review) {
+function getReviewUserId(review)
+{
     return String(review.userId?._id || review.userId || "");
 }
+
 
 // ==========================================
 // PRODUCT DETAILS PAGE
 // ==========================================
 
-function ProductDetails() {
+function ProductDetails()
+{
     const { id } = useParams();
+
     const navigate = useNavigate();
+
     const { dispatch } = useCart();
+
+
+    // ==========================================
+    // STATES
+    // ==========================================
 
     // Product state
     const [product, setProduct] = useState(null);
+
     const [loading, setLoading] = useState(true);
+
     const [error, setError] = useState("");
 
     // Reviews state
     const [reviews, setReviews] = useState([]);
+
     const [totalReviews, setTotalReviews] = useState(0);
+
     const [averageRating, setAverageRating] = useState(0);
 
     const [ratingBreakdown, setRatingBreakdown] = useState({
@@ -122,12 +159,16 @@ function ProductDetails() {
     });
 
     const [reviewsLoading, setReviewsLoading] = useState(true);
+
     const [reviewError, setReviewError] = useState("");
+
     const [reviewSuccess, setReviewSuccess] = useState("");
 
     // Review form state
     const [rating, setRating] = useState(0);
+
     const [comment, setComment] = useState("");
+
     const [submittingReview, setSubmittingReview] = useState(false);
 
     const [isLoggedIn, setIsLoggedIn] = useState(
@@ -142,26 +183,36 @@ function ProductDetails() {
             Boolean(currentUserId)
     );
 
+
     // ==========================================
     // FETCH PRODUCT
     // ==========================================
 
-    useEffect(() => {
+    useEffect(() =>
+    {
         let active = true;
 
-        async function fetchProduct() {
+        async function fetchProduct()
+        {
             setLoading(true);
+
             setError("");
+
             setProduct(null);
 
-            try {
+            try
+            {
                 const response = await api.get(`/products/${id}`);
 
-                if (active) {
+                if (active)
+                {
                     setProduct(response.data);
                 }
-            } catch (err) {
-                if (active) {
+            }
+            catch (err)
+            {
+                if (active)
+                {
                     setError(
                         err.response?.data?.message ||
                         "Unable to load this product. Please try again."
@@ -169,34 +220,45 @@ function ProductDetails() {
                 }
 
                 console.error("PRODUCT DETAILS ERROR:", err);
-            } finally {
+            }
+            finally
+            {
                 if (active) setLoading(false);
             }
         }
 
         fetchProduct();
 
-        return () => {
+        return () =>
+        {
             active = false;
         };
+
     }, [id]);
+
 
     // ==========================================
     // FETCH REVIEWS
     // ==========================================
 
-    const fetchReviews = useCallback(async () => {
+    const fetchReviews = useCallback(async () =>
+    {
         setReviewsLoading(true);
+
         setReviewError("");
 
-        try {
+        try
+        {
             const response = await api.get(`/reviews/${id}`);
+
             const data = response.data;
 
             const fetchedReviews = data.reviews || [];
 
             setReviews(fetchedReviews);
+
             setTotalReviews(data.totalReviews || 0);
+
             setAverageRating(Number(data.averageRating) || 0);
 
             setRatingBreakdown(
@@ -218,39 +280,51 @@ function ProductDetails() {
                     Boolean(userId)
             );
 
-            if (userReview) {
+            if (userReview)
+            {
                 setRating(userReview.rating);
+
                 setComment(userReview.comment || "");
             }
-        } catch (err) {
+        }
+        catch (err)
+        {
             console.error("FETCH REVIEWS ERROR:", err);
 
             setReviewError(
                 err.response?.data?.message ||
                 "Unable to load reviews right now."
             );
-        } finally {
+        }
+        finally
+        {
             setReviewsLoading(false);
         }
     }, [id]);
 
-    useEffect(() => {
+    useEffect(() =>
+    {
         fetchReviews();
     }, [fetchReviews]);
+
 
     // ==========================================
     // ADD TO CART
     // ==========================================
 
-    const handleAddToCart = async () => {
-        if (!localStorage.getItem("token")) {
+    const handleAddToCart = async () =>
+    {
+        if (!localStorage.getItem("token"))
+        {
             navigate("/login", {
                 state: { from: `/products/${id}` }
             });
+
             return;
         }
 
-        try {
+        try
+        {
             const response = await api.post("/cart", {
                 productId: product._id,
                 quantity: 1
@@ -262,13 +336,17 @@ function ProductDetails() {
             });
 
             alert("Product added to cart!");
-        } catch (err) {
+        }
+        catch (err)
+        {
             console.error("ADD TO CART ERROR:", err);
 
-            if (err.response?.status === 401) {
+            if (err.response?.status === 401)
+            {
                 navigate("/login", {
                     state: { from: `/products/${id}` }
                 });
+
                 return;
             }
 
@@ -279,35 +357,46 @@ function ProductDetails() {
         }
     };
 
+
     // ==========================================
     // SUBMIT / UPDATE REVIEW
     // ==========================================
 
-    const handleReviewSubmit = async (event) => {
+    const handleReviewSubmit = async (event) =>
+    {
         event.preventDefault();
 
         setReviewError("");
+
         setReviewSuccess("");
 
-        if (!localStorage.getItem("token")) {
+        if (!localStorage.getItem("token"))
+        {
             setIsLoggedIn(false);
+
             setReviewError("Please log in to write a review.");
+
             return;
         }
 
-        if (!rating || rating < 1 || rating > 5) {
+        if (!rating || rating < 1 || rating > 5)
+        {
             setReviewError("Please select a star rating.");
+
             return;
         }
 
-        if (comment.trim().length < 3) {
+        if (comment.trim().length < 3)
+        {
             setReviewError("Please write at least 3 characters.");
+
             return;
         }
 
         setSubmittingReview(true);
 
-        try {
+        try
+        {
             const response = await api.post(`/reviews/${id}`, {
                 rating,
                 comment: comment.trim()
@@ -318,13 +407,16 @@ function ProductDetails() {
             );
 
             await fetchReviews();
-        } catch (err) {
+        }
+        catch (err)
+        {
             console.error("SUBMIT REVIEW ERROR:", err);
 
             if (
                 err.response?.status === 401 ||
                 err.response?.status === 403
-            ) {
+            )
+            {
                 setIsLoggedIn(false);
             }
 
@@ -332,44 +424,60 @@ function ProductDetails() {
                 err.response?.data?.message ||
                 "Unable to submit your review. Please try again."
             );
-        } finally {
+        }
+        finally
+        {
             setSubmittingReview(false);
         }
     };
+
 
     // ==========================================
     // LOADING STATE
     // ==========================================
 
-    if (loading) {
+    if (loading)
+    {
         return (
             <>
                 <Navbar />
 
                 <main className="product-details-page">
+
                     <div className="product-page-message">
+
                         <span className="details-spinner" />
+
                         <h2>Finding your product</h2>
+
                         <p>Please wait while we load the details.</p>
+
                     </div>
+
                 </main>
             </>
         );
     }
 
+
     // ==========================================
     // ERROR / NOT FOUND STATE
     // ==========================================
 
-    if (error || !product) {
+    if (error || !product)
+    {
         return (
             <>
                 <Navbar />
 
                 <main className="product-details-page">
+
                     <div className="product-page-message">
+
                         <div className="details-message-icon">!</div>
+
                         <h2>{error || "Product not found"}</h2>
+
                         <p>
                             We couldn't find this product. Please return to
                             the catalog and explore other products.
@@ -377,19 +485,23 @@ function ProductDetails() {
 
                         <button
                             type="button"
-                            className="details-back-button"
+                            className="details-back-button solid"
                             onClick={() => navigate("/products")}
                         >
                             ← Back to Products
                         </button>
+
                     </div>
+
                 </main>
             </>
         );
     }
 
     const stock = Number(product.stock) || 0;
+
     const price = Number(product.price) || 0;
+
 
     // ==========================================
     // MAIN UI
@@ -400,34 +512,64 @@ function ProductDetails() {
             <Navbar />
 
             <main className="product-details-page">
+
                 <div className="product-page-content">
-                    {/* Breadcrumb */}
+
+                    {/* BREADCRUMB */}
+
                     <nav
                         className="product-breadcrumb"
                         aria-label="Breadcrumb"
                     >
                         <Link to="/">Home</Link>
+
                         <span>/</span>
+
                         <Link to="/products">Products</Link>
+
+                        {product.category && (
+                            <>
+                                <span>/</span>
+
+                                <Link
+                                    to={`/products?category=${encodeURIComponent(
+                                        product.category
+                                    )}`}
+                                >
+                                    {product.category}
+                                </Link>
+                            </>
+                        )}
+
                         <span>/</span>
+
                         <strong title={product.name}>{product.name}</strong>
                     </nav>
 
-                    {/* Back navigation */}
+
+                    {/* BACK NAVIGATION */}
+
                     <button
                         type="button"
                         className="details-back-button"
                         onClick={() => navigate("/products")}
                     >
                         <span aria-hidden="true">←</span>
+
                         Back to Products
                     </button>
 
-                    {/* Main product card */}
+
+                    {/* MAIN PRODUCT SECTION */}
+
                     <section className="product-details-container">
-                        {/* Image panel */}
+
+                        {/* IMAGE PANEL */}
+
                         <div className="product-details-image">
+
                             <div className="product-image-frame">
+
                                 {product.image ? (
                                     <img
                                         src={product.image}
@@ -435,35 +577,38 @@ function ProductDetails() {
                                     />
                                 ) : (
                                     <div className="product-image-placeholder">
+
                                         <span aria-hidden="true">◇</span>
+
                                         <p>No image available</p>
+
                                     </div>
                                 )}
+
+                                <span
+                                    className={`product-image-status ${
+                                        stock > 0 ? "available" : "unavailable"
+                                    }`}
+                                >
+                                    <span className="stock-indicator" />
+
+                                    {stock > 0 ? "Available" : "Out of Stock"}
+                                </span>
+
                             </div>
 
-                            <span
-                                className={`product-image-status ${
-                                    stock > 0 ? "available" : "unavailable"
-                                }`}
-                            >
-                                <span className="stock-indicator" />
-                                {stock > 0 ? "Available" : "Out of Stock"}
-                            </span>
                         </div>
 
-                        {/* Product information */}
-                        <div className="product-details-info">
-                            <div className="details-topline">
-                                {product.category && (
-                                    <span className="details-category">
-                                        {product.category}
-                                    </span>
-                                )}
 
-                                <span className="details-product-label">
-                                    SHOPHUB PRODUCT
+                        {/* PRODUCT INFORMATION */}
+
+                        <div className="product-details-info">
+
+                            {product.category && (
+                                <span className="details-category">
+                                    {product.category}
                                 </span>
-                            </div>
+                            )}
 
                             <h1>{product.name}</h1>
 
@@ -492,17 +637,23 @@ function ProductDetails() {
                             </p>
 
                             <div className="details-price-block">
+
                                 <span className="details-price-label">
                                     Price
                                 </span>
 
                                 <div className="details-price">
+
                                     <span className="price-currency">Rs.</span>
+
                                     {price.toLocaleString("en-PK")}
+
                                 </div>
+
                             </div>
 
                             <div className="details-stock">
+
                                 <span
                                     className={
                                         stock > 0
@@ -516,6 +667,7 @@ function ProductDetails() {
                                         ? `In stock · ${stock} available`
                                         : "Currently unavailable"}
                                 </span>
+
                             </div>
 
                             <button
@@ -524,7 +676,10 @@ function ProductDetails() {
                                 disabled={stock <= 0}
                                 onClick={handleAddToCart}
                             >
-                                <span className="cart-button-icon" aria-hidden="true">
+                                <span
+                                    className="cart-button-icon"
+                                    aria-hidden="true"
+                                >
                                     <svg
                                         viewBox="0 0 24 24"
                                         fill="none"
@@ -544,59 +699,69 @@ function ProductDetails() {
                             </button>
 
                             <div className="product-trust-note">
-                                <span className="trust-check" aria-hidden="true">
+
+                                <span
+                                    className="trust-check"
+                                    aria-hidden="true"
+                                >
                                     ✓
                                 </span>
 
                                 <div>
                                     <strong>Shop with confidence</strong>
+
                                     <span>
                                         A simple and reliable shopping experience.
                                     </span>
                                 </div>
+
                             </div>
+
                         </div>
+
                     </section>
 
-                    {/* Product information */}
-                    <section className="product-extra-section">
-                        <div className="section-title-group">
-                            <div className="section-title-icon" aria-hidden="true">
-                                i
-                            </div>
 
-                            <div>
-                                <p className="section-eyebrow">
-                                    THE DETAILS
-                                </p>
-                                <h2>Product Information</h2>
-                                <p className="section-subtitle">
-                                    Everything you need to know about this item.
-                                </p>
-                            </div>
+                    {/* PRODUCT INFORMATION */}
+
+                    <section className="product-extra-section">
+
+                        <div className="section-heading">
+
+                            <h2>Product Information</h2>
+
+                            <p>Everything you need to know about this item.</p>
+
                         </div>
 
                         <div className="product-information-description">
+
                             <h3>About this product</h3>
+
                             <p>
                                 {product.description ||
                                     "This product is available for purchase while stock lasts."}
                             </p>
+
                         </div>
 
                         <div className="product-information-grid">
+
                             <div className="product-information-item">
                                 <span>Product name</span>
+
                                 <strong>{product.name}</strong>
                             </div>
 
                             <div className="product-information-item">
                                 <span>Category</span>
+
                                 <strong>{product.category || "General"}</strong>
                             </div>
 
                             <div className="product-information-item">
                                 <span>Availability</span>
+
                                 <strong
                                     className={
                                         stock > 0
@@ -610,40 +775,50 @@ function ProductDetails() {
 
                             <div className="product-information-item">
                                 <span>Customer rating</span>
+
                                 <strong>
                                     {averageRating.toFixed(1)} / 5
                                 </strong>
                             </div>
+
                         </div>
+
                     </section>
 
-                    {/* Customer reviews */}
+
+                    {/* CUSTOMER REVIEWS */}
+
                     <section
                         className="product-reviews-section"
                         id="product-reviews"
                     >
+
                         <div className="reviews-heading">
-                            <div>
-                                <p className="section-eyebrow">
-                                    CUSTOMER FEEDBACK
-                                </p>
+
+                            <div className="section-heading">
 
                                 <h2>Customer Reviews</h2>
 
-                                <p className="reviews-subtitle">
+                                <p>
                                     Honest feedback from shoppers about this product.
                                 </p>
+
                             </div>
 
                             <span className="reviews-total-badge">
                                 {totalReviews}{" "}
                                 {totalReviews === 1 ? "Review" : "Reviews"}
                             </span>
+
                         </div>
 
-                        {/* Rating overview */}
+
+                        {/* RATING OVERVIEW */}
+
                         <div className="reviews-summary">
+
                             <div className="reviews-average">
+
                                 <strong>{averageRating.toFixed(1)}</strong>
 
                                 <Stars rating={averageRating} />
@@ -652,10 +827,13 @@ function ProductDetails() {
                                     Based on {totalReviews}{" "}
                                     {totalReviews === 1 ? "review" : "reviews"}
                                 </span>
+
                             </div>
 
                             <div className="reviews-breakdown">
-                                {[5, 4, 3, 2, 1].map((star) => {
+
+                                {[5, 4, 3, 2, 1].map((star) =>
+                                {
                                     const count =
                                         Number(ratingBreakdown[star]) || 0;
 
@@ -668,6 +846,7 @@ function ProductDetails() {
                                             className="rating-breakdown-row"
                                             key={star}
                                         >
+
                                             <span className="rating-star-label">
                                                 {star} star
                                             </span>
@@ -691,41 +870,37 @@ function ProductDetails() {
                                             <span className="rating-count">
                                                 {count}
                                             </span>
+
                                         </div>
                                     );
                                 })}
+
                             </div>
+
                         </div>
 
-                        {/* Write or update review */}
+
+                        {/* WRITE OR UPDATE REVIEW */}
+
                         <div className="write-review-card">
+
                             <div className="write-review-heading">
-                                <div>
-                                    <p className="section-eyebrow">
-                                        YOUR EXPERIENCE
-                                    </p>
 
-                                    <h3>
-                                        {existingReview
-                                            ? "Update Your Review"
-                                            : "Write a Review"}
-                                    </h3>
+                                <h3>
+                                    {existingReview
+                                        ? "Update Your Review"
+                                        : "Write a Review"}
+                                </h3>
 
-                                    <p>
-                                        Share your thoughts to help other shoppers.
-                                    </p>
-                                </div>
+                                <p>
+                                    Share your thoughts to help other shoppers.
+                                </p>
 
-                                <span
-                                    className="write-review-icon"
-                                    aria-hidden="true"
-                                >
-                                    ✎
-                                </span>
                             </div>
 
                             {isLoggedIn ? (
                                 <form onSubmit={handleReviewSubmit}>
+
                                     <label className="review-field-label">
                                         Your rating
                                     </label>
@@ -757,6 +932,7 @@ function ProductDetails() {
                                     />
 
                                     <div className="review-form-footer">
+
                                         <span>
                                             {comment.length}/1000 characters
                                         </span>
@@ -775,10 +951,13 @@ function ProductDetails() {
                                                     ? "Update Review"
                                                     : "Submit Review"}
                                         </button>
+
                                     </div>
+
                                 </form>
                             ) : (
                                 <div className="review-login-prompt">
+
                                     <p>
                                         Log in to rate this product and share
                                         your experience with other customers.
@@ -796,6 +975,7 @@ function ProductDetails() {
                                     >
                                         Log In to Review
                                     </button>
+
                                 </div>
                             )}
 
@@ -816,28 +996,42 @@ function ProductDetails() {
                                     {reviewSuccess}
                                 </p>
                             )}
+
                         </div>
 
-                        {/* Review list heading */}
+
+                        {/* REVIEW LIST HEADING */}
+
                         <div className="reviews-list-heading">
+
                             <div>
                                 <h3>What Customers Say</h3>
+
                                 <p>Feedback shared by other shoppers.</p>
                             </div>
 
                             <span>{totalReviews} total</span>
+
                         </div>
 
-                        {/* Review list states */}
+
+                        {/* REVIEW LIST STATES */}
+
                         {reviewsLoading ? (
                             <div className="reviews-empty-state">
+
                                 <span className="details-spinner" />
+
                                 <p>Loading customer reviews...</p>
+
                             </div>
                         ) : reviewError && reviews.length === 0 ? (
                             <div className="reviews-empty-state">
+
                                 <div className="empty-review-icon">!</div>
+
                                 <h4>Reviews couldn't be loaded</h4>
+
                                 <p>{reviewError}</p>
 
                                 <button
@@ -847,19 +1041,26 @@ function ProductDetails() {
                                 >
                                     Try Again
                                 </button>
+
                             </div>
                         ) : reviews.length === 0 ? (
                             <div className="reviews-empty-state">
+
                                 <div className="empty-review-icon">☆</div>
+
                                 <h4>No reviews yet</h4>
+
                                 <p>
                                     Be the first to share your experience with
                                     this product.
                                 </p>
+
                             </div>
                         ) : (
                             <div className="reviews-list">
-                                {reviews.map((review) => {
+
+                                {reviews.map((review) =>
+                                {
                                     const reviewerName =
                                         review.userName || "ShopHub Customer";
 
@@ -868,6 +1069,7 @@ function ProductDetails() {
                                             className="customer-review-card"
                                             key={review._id}
                                         >
+
                                             <div className="review-avatar">
                                                 {reviewerName
                                                     .trim()
@@ -876,12 +1078,17 @@ function ProductDetails() {
                                             </div>
 
                                             <div className="customer-review-content">
+
                                                 <div className="customer-review-top">
+
                                                     <div className="review-author">
+
                                                         <h4>{reviewerName}</h4>
+
                                                         <Stars
                                                             rating={review.rating}
                                                         />
+
                                                     </div>
 
                                                     <time className="review-date">
@@ -890,6 +1097,7 @@ function ProductDetails() {
                                                             review.createdAt
                                                         )}
                                                     </time>
+
                                                 </div>
 
                                                 <p className="customer-review-comment">
@@ -909,17 +1117,25 @@ function ProductDetails() {
                                                             Edited
                                                         </span>
                                                     )}
+
                                             </div>
+
                                         </article>
                                     );
                                 })}
+
                             </div>
                         )}
+
                     </section>
+
                 </div>
 
-                {/* Footer */}
+
+                {/* FOOTER */}
+
                 <footer className="shop-footer">
+
                     <Link to="/" className="shop-footer-logo">
                         Shop<span>Hub</span>
                     </Link>
@@ -929,10 +1145,13 @@ function ProductDetails() {
                     <div>
                         © {new Date().getFullYear()} ShopHub. All rights reserved.
                     </div>
+
                 </footer>
+
             </main>
         </>
     );
 }
+
 
 export default ProductDetails;

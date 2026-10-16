@@ -1,0 +1,875 @@
+// ==========================================
+// IMPORTS
+// ==========================================
+
+import {
+    useEffect,
+    useRef,
+    useState
+} from "react";
+
+import {
+    Link
+} from "react-router-dom";
+
+import {
+    ArrowRight,
+    ShoppingBag,
+    ChevronDown,
+    ShieldCheck,
+    Truck,
+    Star,
+    Zap
+} from "lucide-react";
+
+import api from "../services/api";
+
+import Navbar from "../components/Navbar";
+
+import "../styles/Home.css";
+
+
+// ==========================================
+// HOME COMPONENT
+// ==========================================
+
+function Home()
+{
+    // ==========================================
+    // STATES
+    // ==========================================
+
+    const [products, setProducts] = useState([]);
+
+    const [loading, setLoading] = useState(true);
+
+    const [error, setError] = useState("");
+
+    const [activeSection, setActiveSection] = useState(0);
+
+    const [heroIndex, setHeroIndex] = useState(0);
+
+    const containerRef = useRef(null);
+
+
+    // ==========================================
+    // HERO SLIDES
+    // ==========================================
+
+    const heroSlides = [
+        {
+            title: "New Season Arrivals",
+            subtitle: "Fresh styles and everyday favorites, just landed",
+            image: "https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=2400&q=90",
+            position: "center 30%"
+        },
+
+        {
+            title: "Style That Moves With You",
+            subtitle: "Pieces you will reach for again and again",
+            image: "https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=2400&q=90",
+            position: "center 50%"
+        },
+
+        {
+            title: "Everyday Essentials",
+            subtitle: "Simple, comfortable and made to last",
+            image: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=2400&q=90",
+            position: "center 35%"
+        },
+
+        {
+            title: "Find Your Favorites",
+            subtitle: "Discover something new at ShopHub",
+            image: "https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=2400&q=90",
+            position: "center 50%"
+        }
+    ];
+
+
+    // ==========================================
+    // CATEGORIES
+    // ==========================================
+
+    const categories = [
+        {
+            name: "Electronics",
+            image: "https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=900&q=85",
+            description: "Technology for everyday life"
+        },
+
+        {
+            name: "Clothing",
+            image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=900&q=85",
+            description: "Find your personal style"
+        },
+
+        {
+            name: "Shoes",
+            image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=85",
+            description: "Step out with confidence"
+        },
+
+        {
+            name: "Accessories",
+            image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=900&q=85",
+            description: "Complete your look"
+        }
+    ];
+
+
+    // ==========================================
+    // FETCH PRODUCTS FROM BACKEND
+    // ==========================================
+
+    useEffect(() =>
+    {
+        const fetchProducts = async () =>
+        {
+            try
+            {
+                setLoading(true);
+
+                const response = await api.get("/products");
+
+                const productData = Array.isArray(response.data)
+                    ? response.data
+                    : response.data.products || [];
+
+                setProducts(productData);
+
+                setError("");
+            }
+            catch (err)
+            {
+                console.error("Error fetching products:", err);
+
+                setError("Unable to load products. Please try again later.");
+            }
+            finally
+            {
+                setLoading(false);
+            }
+        };
+
+        fetchProducts();
+
+    }, []);
+
+
+    // ==========================================
+    // OBSERVE ACTIVE SLIDE
+    // ==========================================
+
+    useEffect(() =>
+    {
+        const container = containerRef.current;
+
+        if (!container)
+        {
+            return;
+        }
+
+        const sections = container.querySelectorAll(".snap-section");
+
+        const observer = new IntersectionObserver(
+            (entries) =>
+            {
+                entries.forEach((entry) =>
+                {
+                    if (entry.isIntersecting)
+                    {
+                        setActiveSection(
+                            Number(entry.target.dataset.index)
+                        );
+                    }
+                });
+            },
+            {
+                root: container,
+                threshold: 0.55
+            }
+        );
+
+        sections.forEach((section) =>
+        {
+            observer.observe(section);
+        });
+
+        return () =>
+        {
+            observer.disconnect();
+        };
+
+    }, []);
+
+
+    // ==========================================
+    // AUTO CHANGE HERO IMAGE
+    // ==========================================
+
+    useEffect(() =>
+    {
+        const timer = setTimeout(() =>
+        {
+            setHeroIndex((current) => (current + 1) % heroSlides.length);
+        }, 5500);
+
+        return () =>
+        {
+            clearTimeout(timer);
+        };
+
+    }, [heroIndex, heroSlides.length]);
+
+
+    // ==========================================
+    // FEATURED PRODUCTS
+    // ==========================================
+
+    const featuredProducts = products.slice(0, 4);
+
+
+    // ==========================================
+    // FORMAT PRICE
+    // ==========================================
+
+    const formatPrice = (price) =>
+    {
+        return Number(price || 0).toLocaleString("en-PK");
+    };
+
+
+    // ==========================================
+    // SCROLL TO SPECIFIC SLIDE
+    // ==========================================
+
+    const goToSection = (index) =>
+    {
+        const container = containerRef.current;
+
+        if (!container)
+        {
+            return;
+        }
+
+        const section = container.querySelector(
+            `[data-index="${index}"]`
+        );
+
+        if (section)
+        {
+            section.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        }
+    };
+
+
+    // ==========================================
+    // NEXT AND PREVIOUS SLIDES
+    // ==========================================
+
+    const nextSection = () =>
+    {
+        goToSection(Math.min(activeSection + 1, 4));
+    };
+
+    const previousSection = () =>
+    {
+        goToSection(Math.max(activeSection - 1, 0));
+    };
+
+
+    // ==========================================
+    // HOME PAGE UI
+    // ==========================================
+
+    return (
+        <div className="home-page">
+
+            {/* ======================================
+                NAVBAR
+            ====================================== */}
+
+            <Navbar />
+
+
+            {/* ======================================
+                HOME SLIDES
+            ====================================== */}
+
+            <main
+                className="home-snap-container"
+                ref={containerRef}
+            >
+
+                {/* ======================================
+                    SLIDE 1 - FULL SCREEN CATEGORY HERO
+                ====================================== */}
+
+                <section
+                    className="snap-section hero-section"
+                    data-index="0"
+                >
+
+                    <div className="hero-banner">
+
+                        {heroSlides.map((slide, index) => (
+
+                            <div
+                                key={slide.title}
+                                className={
+                                    heroIndex === index
+                                        ? "hero-slide active"
+                                        : "hero-slide"
+                                }
+                                aria-hidden={heroIndex !== index}
+                            >
+
+                                <img
+                                    className="hero-slide-image"
+                                    src={slide.image}
+                                    alt={slide.title}
+                                    style={{ objectPosition: slide.position }}
+                                    loading={index === 0 ? "eager" : "lazy"}
+                                />
+
+                                <div className="hero-banner-overlay"></div>
+
+
+                                {/* Centered text only */}
+
+                                <div className="hero-slide-content">
+
+                                    <h1>
+                                        {slide.title}
+                                    </h1>
+
+                                    <p>
+                                        {slide.subtitle}
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        ))}
+
+
+                        {/* Dots */}
+
+                        <div className="hero-dots">
+
+                            {heroSlides.map((slide, index) => (
+
+                                <button
+                                    key={slide.title}
+                                    className={
+                                        heroIndex === index
+                                            ? "hero-dot active"
+                                            : "hero-dot"
+                                    }
+                                    onClick={() => setHeroIndex(index)}
+                                    aria-label={`Show slide ${index + 1}`}
+                                />
+
+                            ))}
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                {/* ======================================
+                    SLIDE 2 - CATEGORIES
+                ====================================== */}
+
+                <section
+                    className="snap-section categories-section"
+                    data-index="1"
+                >
+
+                    <div className="section-heading">
+
+                        <span className="section-eyebrow">
+                            Explore our collection
+                        </span>
+
+                        <h2>
+                            Shop by <span>category</span>
+                        </h2>
+
+                        <p>
+                            Find the things you love, all in one place.
+                        </p>
+
+                    </div>
+
+
+                    <div className="categories-grid">
+
+                        {categories.map((category) => (
+
+                            <Link
+                                to={`/products?category=${encodeURIComponent(category.name)}`}
+                                className="category-card"
+                                key={category.name}
+                            >
+
+                                <div className="category-image-wrapper">
+
+                                    <img
+                                        src={category.image}
+                                        alt={category.name}
+                                        className="category-image"
+                                    />
+
+                                    <div className="category-image-overlay"></div>
+
+                                    <div className="category-card-content">
+
+                                        <span>
+                                            Discover collection
+                                        </span>
+
+                                        <h3>
+                                            {category.name}
+                                        </h3>
+
+                                        <p>
+                                            {category.description}
+                                        </p>
+
+                                        <div className="category-arrow">
+                                            <ArrowRight size={20} />
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </Link>
+
+                        ))}
+
+                    </div>
+
+                </section>
+
+
+                {/* ======================================
+                    SLIDE 3 - FEATURED PRODUCTS
+                ====================================== */}
+
+                <section
+                    className="snap-section products-section"
+                    data-index="2"
+                >
+
+                    <div className="section-heading products-heading">
+
+                        <span className="section-eyebrow">
+                            Handpicked for you
+                        </span>
+
+                        <h2>
+                            Featured <span>products</span>
+                        </h2>
+
+                        <p>
+                            Take a look at some of our latest products.
+                        </p>
+
+                    </div>
+
+
+                    {loading ? (
+
+                        <div className="products-message">
+                            <div className="loading-spinner"></div>
+
+                            <p>
+                                Loading products...
+                            </p>
+                        </div>
+
+                    ) : error ? (
+
+                        <div className="products-message error-message">
+                            <p>{error}</p>
+                        </div>
+
+                    ) : featuredProducts.length > 0 ? (
+
+                        <div className="featured-products-grid">
+
+                            {featuredProducts.map((product) => (
+
+                                <Link
+                                    to={`/products/${product._id}`}
+                                    className="featured-product-card"
+                                    key={product._id}
+                                >
+
+                                    <div className="featured-product-image-wrapper">
+
+                                        <img
+                                            src={product.image}
+                                            alt={product.name}
+                                            className="featured-product-image"
+                                        />
+
+                                        <span className="product-tag">
+                                            Featured
+                                        </span>
+
+                                        <div className="product-quick-view">
+                                            <ArrowRight size={19} />
+                                        </div>
+
+                                    </div>
+
+
+                                    <div className="featured-product-info">
+
+                                        <span className="product-category-label">
+                                            {product.category}
+                                        </span>
+
+                                        <h3>
+                                            {product.name}
+                                        </h3>
+
+                                        <div className="featured-product-bottom">
+
+                                            <p className="product-price">
+                                                <span>PKR</span>{" "}
+                                                {formatPrice(product.price)}
+                                            </p>
+
+                                            <span className="product-view-label">
+                                                View product
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </Link>
+
+                            ))}
+
+                        </div>
+
+                    ) : (
+
+                        <div className="products-message">
+                            <ShoppingBag size={35} />
+
+                            <h3>
+                                Products are coming soon
+                            </h3>
+
+                            <p>
+                                Check back later to explore our collection.
+                            </p>
+                        </div>
+
+                    )}
+
+
+                    <div className="section-bottom-action">
+
+                        <Link
+                            to="/products"
+                            className="outline-shop-button"
+                        >
+                            View All Products
+
+                            <ArrowRight size={18} />
+                        </Link>
+
+                    </div>
+
+                </section>
+
+
+                {/* ======================================
+                    SLIDE 4 - SHOPPING EXPERIENCE
+                ====================================== */}
+
+                <section
+                    className="snap-section experience-section"
+                    data-index="3"
+                >
+
+                    <div className="experience-intro">
+
+                        <span className="section-eyebrow">
+                            The ShopHub experience
+                        </span>
+
+                        <h2>
+                            Shopping made <span>simple.</span>
+                        </h2>
+
+                        <p>
+                            Everything you need for a smooth and
+                            enjoyable shopping experience.
+                        </p>
+
+                    </div>
+
+
+                    <div className="experience-grid">
+
+                        <div className="experience-card">
+
+                            <div className="experience-icon purple-icon">
+                                <Zap size={27} />
+                            </div>
+
+                            <h3>
+                                Easy Shopping
+                            </h3>
+
+                            <p>
+                                Explore categories and discover products
+                                with a simple, convenient experience.
+                            </p>
+
+                        </div>
+
+
+                        <div className="experience-card">
+
+                            <div className="experience-icon orange-icon">
+                                <ShieldCheck size={27} />
+                            </div>
+
+                            <h3>
+                                Your Account
+                            </h3>
+
+                            <p>
+                                Access your account and manage your
+                                shopping activity in one place.
+                            </p>
+
+                        </div>
+
+
+                        <div className="experience-card">
+
+                            <div className="experience-icon pink-icon">
+                                <Star size={27} />
+                            </div>
+
+                            <h3>
+                                Quality Collection
+                            </h3>
+
+                            <p>
+                                Browse a growing collection of products
+                                across different categories.
+                            </p>
+
+                        </div>
+
+
+                        <div className="experience-card">
+
+                            <div className="experience-icon blue-icon">
+                                <Truck size={27} />
+                            </div>
+
+                            <h3>
+                                Shop with Ease
+                            </h3>
+
+                            <p>
+                                Find what you need without the hassle
+                                of searching across multiple stores.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div className="experience-bottom">
+
+                        <Link
+                            to="/products"
+                            className="hero-shop-button"
+                        >
+                            Explore Products
+
+                            <ArrowRight size={19} />
+                        </Link>
+
+                    </div>
+
+                </section>
+
+
+                {/* ======================================
+                    SLIDE 5 - FINAL SHOPPING BANNER
+                ====================================== */}
+
+                <section
+                    className="snap-section final-section"
+                    data-index="4"
+                >
+
+                    <div className="final-banner">
+
+                        <div className="final-banner-content">
+
+                            <span className="section-eyebrow">
+                                Your next favorite is waiting
+                            </span>
+
+                            <h2>
+                                Ready to find
+                                <br />
+                                <span>something amazing?</span>
+                            </h2>
+
+                            <p>
+                                Explore our collection and find products
+                                that fit your style and everyday needs.
+                            </p>
+
+                            <Link
+                                to="/products"
+                                className="hero-shop-button"
+                            >
+                                Start Shopping
+
+                                <ArrowRight size={19} />
+                            </Link>
+
+                        </div>
+
+                        <div className="final-banner-decoration">
+
+                            <div className="final-decoration-circle"></div>
+
+                            <div className="final-decoration-card">
+                                <ShoppingBag size={70} />
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    {/* Footer */}
+
+                    <footer className="home-footer">
+
+                        <div className="footer-brand">
+                            <ShoppingBag size={22} />
+
+                            <span>
+                                Shop<span>Hub</span>
+                            </span>
+                        </div>
+
+                        <p>
+                            Discover more. Shop better.
+                        </p>
+
+                        <span className="footer-copyright">
+                            © {new Date().getFullYear()} ShopHub.
+                            All rights reserved.
+                        </span>
+
+                    </footer>
+
+                </section>
+
+            </main>
+
+
+            {/* ======================================
+                SLIDE NAVIGATION
+            ====================================== */}
+
+            <div className="home-section-navigation">
+
+                {[
+                    "Home",
+                    "Categories",
+                    "Products",
+                    "Experience",
+                    "Shop"
+                ].map((label, index) => (
+
+                    <button
+                        key={label}
+                        className={
+                            activeSection === index
+                                ? "section-nav-dot active"
+                                : "section-nav-dot"
+                        }
+                        onClick={() => goToSection(index)}
+                        aria-label={`Go to ${label}`}
+                        title={label}
+                    >
+
+                        <span className="section-nav-tooltip">
+                            {label}
+                        </span>
+
+                    </button>
+
+                ))}
+
+            </div>
+
+
+            {/* ======================================
+                PREVIOUS / NEXT NAVIGATION
+            ====================================== */}
+
+            <div className="home-arrow-navigation">
+
+                <button
+                    onClick={previousSection}
+                    disabled={activeSection === 0}
+                    aria-label="Previous slide"
+                    title="Previous slide"
+                >
+                    <ChevronDown
+                        size={20}
+                        className="arrow-up"
+                    />
+                </button>
+
+                <button
+                    onClick={nextSection}
+                    disabled={activeSection === 4}
+                    aria-label="Next slide"
+                    title="Next slide"
+                >
+                    <ChevronDown size={20} />
+                </button>
+
+            </div>
+
+        </div>
+    );
+}
+
+
+// ==========================================
+// EXPORT HOME COMPONENT
+// ==========================================
+
+export default Home;

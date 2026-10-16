@@ -19,7 +19,14 @@ import api from "../services/api";
 import "../styles/Navbar.css";
 
 
-function Navbar()
+// ==========================================
+// PROPS
+// overlay     = navbar floats on top of the page (used on Home)
+// transparent = navbar has no background (used on Home slide 1 only)
+// Other pages use <Navbar /> as before.
+// ==========================================
+
+function Navbar({ overlay = false, transparent = false })
 {
     const { user, logout } = useAuth();
 
@@ -77,11 +84,24 @@ function Navbar()
 
 
     // ==========================================
+    // NAVBAR CLASSES
+    // ==========================================
+
+    const navbarClass = [
+        "shop-navbar",
+        overlay ? "navbar-overlay" : "",
+        transparent ? "navbar-transparent" : ""
+    ]
+        .filter(Boolean)
+        .join(" ");
+
+
+    // ==========================================
     // UI
     // ==========================================
 
     return (
-        <nav className="shop-navbar">
+        <nav className={navbarClass}>
 
             <Link
                 to="/"

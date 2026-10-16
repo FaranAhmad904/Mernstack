@@ -1,17 +1,21 @@
-
 // ==========================================
 // IMPORTS
 // ==========================================
 
-import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import {
+    useEffect,
+    useRef,
+    useState
+} from "react";
+
+import {
+    Link
+} from "react-router-dom";
 
 import {
     ArrowRight,
     ShoppingBag,
     ChevronDown,
-    ChevronRight,
-    Sparkles,
     ShieldCheck,
     Truck,
     Star,
@@ -19,28 +23,75 @@ import {
 } from "lucide-react";
 
 import api from "../services/api";
+
 import Navbar from "../components/Navbar";
 
 import "../styles/Home.css";
 
 
 // ==========================================
-// HOME PAGE
+// HOME COMPONENT
 // ==========================================
 
-function Home() {
-
+function Home()
+{
     // ==========================================
-    // STATE
+    // STATES
     // ==========================================
 
     const [products, setProducts] = useState([]);
+
     const [loading, setLoading] = useState(true);
+
     const [error, setError] = useState("");
 
     const [activeSection, setActiveSection] = useState(0);
 
+    const [heroIndex, setHeroIndex] = useState(0);
+
     const containerRef = useRef(null);
+
+
+    // ==========================================
+    // HERO SLIDES
+    // ==========================================
+
+    const heroSlides = [
+        {
+            title: "Upgrade Your Everyday",
+            subtitle: "Smart tech and gadgets for work, play and everything between",
+            image: "https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=1200&q=90",
+            position: "center 50%"
+        },
+
+        {
+            title: "Details That Stand Out",
+            subtitle: "Accessories that finish every look",
+            image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=1600&q=90",
+            position: "center 50%"
+        },
+
+        {
+            title: "Walk Your Own Way",
+            subtitle: "Comfort and confidence in every step",
+            image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=2400&q=90",
+            position: "center 55%"
+        },
+
+        {
+            title: "New Season Arrivals",
+            subtitle: "Fresh styles and everyday favorites, just landed",
+            image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1600&q=90",
+            position: "center 50%"
+        },
+
+        {
+            title: "Made for Modern Life",
+            subtitle: "Wearable tech that keeps up with you",
+            image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1600&q=90",
+            position: "center 50%"
+        }
+    ];
 
 
     // ==========================================
@@ -50,70 +101,62 @@ function Home() {
     const categories = [
         {
             name: "Electronics",
-            subtitle: "Smart technology",
-            image:
-                "https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=1200&q=85"
+            image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=90",
+            description: "Technology for everyday life"
         },
+
         {
             name: "Clothing",
-            subtitle: "Everyday style",
-            image:
-                "https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=1200&q=85"
+            image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1200&q=90",
+            description: "Find your personal style"
         },
+
         {
             name: "Shoes",
-            subtitle: "Step into style",
-            image:
-                "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1200&q=85"
+            image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1200&q=90",
+            description: "Step out with confidence"
         },
+
         {
             name: "Accessories",
-            subtitle: "Complete your look",
-            image:
-                "https://images.unsplash.com/photo-1523779917675-b6ed3a42a561?auto=format&fit=crop&w=1200&q=85"
+            image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1200&q=90",
+            description: "Complete your look"
         }
     ];
 
 
     // ==========================================
-    // FETCH PRODUCTS
+    // FETCH PRODUCTS FROM BACKEND
     // ==========================================
 
-    useEffect(() => {
-
-        const fetchProducts = async () => {
-
-            try {
-
+    useEffect(() =>
+    {
+        const fetchProducts = async () =>
+        {
+            try
+            {
                 setLoading(true);
-                setError("");
 
                 const response = await api.get("/products");
 
-                setProducts(
-                    Array.isArray(response.data)
-                        ? response.data
-                        : response.data.products || []
-                );
+                const productData = Array.isArray(response.data)
+                    ? response.data
+                    : response.data.products || [];
 
-            } catch (error) {
+                setProducts(productData);
 
-                console.error(
-                    "FETCH PRODUCTS ERROR:",
-                    error
-                );
-
-                setError(
-                    error.response?.data?.message ||
-                    "Unable to load products."
-                );
-
-            } finally {
-
-                setLoading(false);
-
+                setError("");
             }
+            catch (err)
+            {
+                console.error("Error fetching products:", err);
 
+                setError("Unable to load products. Please try again later.");
+            }
+            finally
+            {
+                setLoading(false);
+            }
         };
 
         fetchProducts();
@@ -122,50 +165,46 @@ function Home() {
 
 
     // ==========================================
-    // DETECT ACTIVE SECTION
+    // OBSERVE ACTIVE SLIDE
     // ==========================================
 
-    useEffect(() => {
-
+    useEffect(() =>
+    {
         const container = containerRef.current;
 
-        if (!container) return;
+        if (!container)
+        {
+            return;
+        }
 
-        const sections =
-            container.querySelectorAll(".snap-section");
+        const sections = container.querySelectorAll(".snap-section");
 
         const observer = new IntersectionObserver(
-            (entries) => {
-
-                entries.forEach((entry) => {
-
-                    if (
-                        entry.isIntersecting &&
-                        entry.intersectionRatio >= 0.55
-                    ) {
-
+            (entries) =>
+            {
+                entries.forEach((entry) =>
+                {
+                    if (entry.isIntersecting)
+                    {
                         setActiveSection(
-                            Number(
-                                entry.target.dataset.index
-                            )
+                            Number(entry.target.dataset.index)
                         );
-
                     }
-
                 });
-
             },
             {
                 root: container,
-                threshold: [0.55, 0.7]
+                threshold: 0.55
             }
         );
 
-        sections.forEach((section) => {
+        sections.forEach((section) =>
+        {
             observer.observe(section);
         });
 
-        return () => {
+        return () =>
+        {
             observer.disconnect();
         };
 
@@ -173,834 +212,652 @@ function Home() {
 
 
     // ==========================================
+    // AUTO CHANGE HERO IMAGE
+    // ==========================================
+
+    useEffect(() =>
+    {
+        const timer = setTimeout(() =>
+        {
+            setHeroIndex((current) => (current + 1) % heroSlides.length);
+        }, 5500);
+
+        return () =>
+        {
+            clearTimeout(timer);
+        };
+
+    }, [heroIndex, heroSlides.length]);
+
+
+    // ==========================================
     // FEATURED PRODUCTS
     // ==========================================
 
-    const featuredProducts =
-        products.slice(0, 4);
+    const featuredProducts = products.slice(0, 4);
 
 
     // ==========================================
-    // PRICE FORMAT
+    // FORMAT PRICE
     // ==========================================
 
-    const formatPrice = (price) => {
-
+    const formatPrice = (price) =>
+    {
         return Number(price || 0).toLocaleString("en-PK");
-
     };
 
 
     // ==========================================
-    // GO TO SECTION
+    // SCROLL TO SPECIFIC SLIDE
     // ==========================================
 
-    const goToSection = (index) => {
-
+    const goToSection = (index) =>
+    {
         const container = containerRef.current;
 
-        if (!container) return;
-
-        const sections =
-            container.querySelectorAll(".snap-section");
-
-        if (!sections[index]) return;
-
-        sections[index].scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-        });
-
-    };
-
-
-    // ==========================================
-    // NEXT SECTION
-    // ==========================================
-
-    const nextSection = () => {
-
-        if (activeSection < 4) {
-            goToSection(activeSection + 1);
+        if (!container)
+        {
+            return;
         }
 
-    };
+        const section = container.querySelector(
+            `[data-index="${index}"]`
+        );
 
-
-    // ==========================================
-    // PREVIOUS SECTION
-    // ==========================================
-
-    const previousSection = () => {
-
-        if (activeSection > 0) {
-            goToSection(activeSection - 1);
+        if (section)
+        {
+            section.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
         }
-
     };
 
 
     // ==========================================
-    // RETURN
+    // NEXT AND PREVIOUS SLIDES
+    // ==========================================
+
+    const nextSection = () =>
+    {
+        goToSection(Math.min(activeSection + 1, 4));
+    };
+
+    const previousSection = () =>
+    {
+        goToSection(Math.max(activeSection - 1, 0));
+    };
+
+
+    // ==========================================
+    // HOME PAGE UI
     // ==========================================
 
     return (
-
         <div className="home-page">
 
-            {/* ==================================
+            {/* ======================================
                 NAVBAR
-            ================================== */}
+            ====================================== */}
 
-            <Navbar />
+            <Navbar
+                overlay
+                transparent={activeSection === 0}
+            />
 
 
-            {/* ==================================
-                PAGE CONTAINER
-            ================================== */}
+            {/* ======================================
+                HOME SLIDES
+            ====================================== */}
 
             <main
                 className="home-snap-container"
                 ref={containerRef}
             >
 
-
-                {/* ==================================
-                    SECTION 1 — HERO
-                ================================== */}
+                {/* ======================================
+                    SLIDE 1 - FULL SCREEN CATEGORY HERO
+                ====================================== */}
 
                 <section
-                    className={`snap-section hero-section ${
-                        activeSection === 0
-                            ? "section-active"
-                            : ""
-                    }`}
+                    className="snap-section hero-section"
                     data-index="0"
                 >
 
-                    {/* Animated background */}
+                    <div className="hero-banner">
 
-                    <div className="hero-orb orb-one"></div>
-                    <div className="hero-orb orb-two"></div>
-                    <div className="hero-grid"></div>
+                        {heroSlides.map((slide, index) => (
 
-
-                    {/* Hero content */}
-
-                    <div className="hero-content">
-
-                        <div className="hero-label">
-
-                            <span className="label-dot"></span>
-
-                            NEW COLLECTION
-
-                        </div>
-
-
-                        <h1>
-
-                            Shop smarter.
-                            <span>
-                                Live better.
-                            </span>
-
-                        </h1>
-
-
-                        <p className="hero-description">
-
-                            Discover products you'll love,
-                            explore new collections and
-                            find everything you need in
-                            one simple shopping experience.
-
-                        </p>
-
-
-                        <div className="hero-buttons">
-
-                            <Link
-                                to="/products"
-                                className="hero-main-button"
+                            <div
+                                key={slide.title}
+                                className={
+                                    heroIndex === index
+                                        ? "hero-slide active"
+                                        : "hero-slide"
+                                }
+                                aria-hidden={heroIndex !== index}
                             >
 
-                                <ShoppingBag size={18} />
-
-                                Start Shopping
-
-                                <ArrowRight size={17} />
-
-                            </Link>
-
-
-                            <Link
-                                to="/products"
-                                className="hero-outline-button"
-                            >
-
-                                Explore Collection
-
-                            </Link>
-
-                        </div>
-
-
-                        {/* Stats */}
-
-                        <div className="hero-stats">
-
-                            <div>
-                                <strong>
-                                    {products.length}+
-                                </strong>
-
-                                <span>
-                                    Products
-                                </span>
-                            </div>
-
-
-                            <div className="stat-line"></div>
-
-
-                            <div>
-                                <strong>
-                                    4
-                                </strong>
-
-                                <span>
-                                    Categories
-                                </span>
-                            </div>
-
-
-                            <div className="stat-line"></div>
-
-
-                            <div>
-                                <strong>
-                                    24/7
-                                </strong>
-
-                                <span>
-                                    Shopping
-                                </span>
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    {/* Hero visual */}
-
-                    <div className="hero-visual">
-
-                        <div className="hero-glow"></div>
-
-
-                        <div className="hero-product-card">
-
-                            <div className="hero-product-top">
-
-                                <span>
-                                    SHOPHUB
-                                </span>
-
-                                <Sparkles size={17} />
-
-                            </div>
-
-
-                            <div className="hero-bag">
-
-                                <ShoppingBag
-                                    size={95}
-                                    strokeWidth={1}
+                                <img
+                                    className="hero-slide-image"
+                                    src={slide.image}
+                                    alt={slide.title}
+                                    style={{ objectPosition: slide.position }}
+                                    loading={index === 0 ? "eager" : "lazy"}
                                 />
 
+                                <div className="hero-banner-overlay"></div>
+
+
+                                {/* Centered text only */}
+
+                                <div className="hero-slide-content">
+
+                                    <h1>
+                                        {slide.title}
+                                    </h1>
+
+                                    <p>
+                                        {slide.subtitle}
+                                    </p>
+
+                                </div>
+
                             </div>
 
-
-                            <div className="hero-product-bottom">
-
-                                <span>
-                                    DISCOVER MORE
-                                </span>
-
-                                <ArrowRight size={17} />
-
-                            </div>
-
-                        </div>
+                        ))}
 
 
-                        <div className="floating-card floating-card-one">
+                        {/* Dots */}
 
-                            <div className="floating-icon">
-                                <Zap size={17} />
-                            </div>
+                        <div className="hero-dots">
 
-                            <div>
-                                <strong>
-                                    New Arrivals
-                                </strong>
+                            {heroSlides.map((slide, index) => (
 
-                                <span>
-                                    Just added
-                                </span>
-                            </div>
+                                <button
+                                    key={slide.title}
+                                    className={
+                                        heroIndex === index
+                                            ? "hero-dot active"
+                                            : "hero-dot"
+                                    }
+                                    onClick={() => setHeroIndex(index)}
+                                    aria-label={`Show slide ${index + 1}`}
+                                />
 
-                        </div>
-
-
-                        <div className="floating-card floating-card-two">
-
-                            <Star
-                                size={16}
-                                fill="currentColor"
-                            />
-
-                            <strong>
-                                Great products
-                            </strong>
+                            ))}
 
                         </div>
 
                     </div>
-
-
-                    {/* Scroll */}
-
-                    <button
-                        className="hero-scroll"
-                        onClick={nextSection}
-                    >
-
-                        <span>
-                            Scroll to explore
-                        </span>
-
-                        <ChevronDown size={19} />
-
-                    </button>
 
                 </section>
 
 
-                {/* ==================================
-                    SECTION 2 — CATEGORIES
-                ================================== */}
+                {/* ======================================
+                    SLIDE 2 - CATEGORIES
+                ====================================== */}
 
                 <section
-                    className={`snap-section category-section ${
-                        activeSection === 1
-                            ? "section-active"
-                            : ""
-                    }`}
+                    className={`snap-section categories-section${activeSection === 1 ? " is-active" : ""}`}
                     data-index="1"
                 >
 
-                    <div className="section-container">
+                    <div className="section-header reveal">
 
-                        <div className="section-header">
+                        <div className="section-header-text">
 
-                            <div>
-
-                                <p className="section-label">
-                                    EXPLORE
-                                </p>
-
-                                <h2>
-                                    Find your style.
-                                </h2>
-
-                            </div>
+                            <h2>
+                                Shop by category
+                            </h2>
 
                             <p>
-                                Explore our popular
-                                categories and discover
-                                products made for everyday life.
+                                Find the things you love, all in one place.
                             </p>
 
                         </div>
 
-
-                        <div className="category-grid">
-
-                            {categories.map(
-                                (category, index) => (
-
-                                    <Link
-                                        to={`/products?category=${encodeURIComponent(category.name)}`}
-                                        className="category-card"
-                                        key={category.name}
-                                        style={{
-                                            "--delay":
-                                                `${index * 0.12}s`
-                                        }}
-                                    >
-
-                                        <img
-                                            src={category.image}
-                                            alt={category.name}
-                                        />
-
-
-                                        <div className="category-number">
-                                            0{index + 1}
-                                        </div>
-
-
-                                        <div className="category-gradient"></div>
-
-
-                                        <div className="category-info">
-
-                                            <span>
-                                                {
-                                                    category.subtitle
-                                                }
-                                            </span>
-
-                                            <h3>
-                                                {
-                                                    category.name
-                                                }
-                                            </h3>
-
-                                            <div className="category-explore">
-
-                                                Explore
-
-                                                <ArrowRight
-                                                    size={15}
-                                                />
-
-                                            </div>
-
-                                        </div>
-
-                                    </Link>
-
-                                )
-                            )}
-
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-                {/* ==================================
-                    SECTION 3 — PRODUCTS
-                ================================== */}
-
-                <section
-                    className={`snap-section product-section ${
-                        activeSection === 2
-                            ? "section-active"
-                            : ""
-                    }`}
-                    data-index="2"
-                >
-
-                    <div className="section-container">
-
-                        <div className="product-heading">
-
-                            <div>
-
-                                <p className="section-label">
-                                    SHOPHUB PICKS
-                                </p>
-
-                                <h2>
-                                    Featured products.
-                                </h2>
-
-                                <p>
-                                    A few products from our
-                                    growing collection.
-                                </p>
-
-                            </div>
-
-
-                            <Link
-                                to="/products"
-                                className="all-products"
-                            >
-
-                                View all products
-
-                                <ArrowRight
-                                    size={16}
-                                />
-
-                            </Link>
-
-                        </div>
-
-
-                        {loading && (
-
-                            <div className="product-loading">
-                                Loading products...
-                            </div>
-
-                        )}
-
-
-                        {!loading &&
-                            error && (
-
-                                <div className="product-loading error">
-                                    {error}
-                                </div>
-
-                            )}
-
-
-                        {!loading &&
-                            !error &&
-                            featuredProducts.length === 0 && (
-
-                                <div className="product-loading">
-                                    No products available.
-                                </div>
-
-                            )}
-
-
-                        {!loading &&
-                            !error &&
-                            featuredProducts.length > 0 && (
-
-                                <div className="product-grid">
-
-                                    {featuredProducts.map(
-                                        (
-                                            product,
-                                            index
-                                        ) => (
-
-                                            <article
-                                                className="product-card"
-                                                key={product._id}
-                                                style={{
-                                                    "--delay":
-                                                        `${index * 0.12}s`
-                                                }}
-                                            >
-
-                                                <Link
-                                                    to={`/products/${product._id}`}
-                                                    className="product-image"
-                                                >
-
-                                                    {product.image ? (
-
-                                                        <img
-                                                            src={
-                                                                product.image
-                                                            }
-                                                            alt={
-                                                                product.name
-                                                            }
-                                                        />
-
-                                                    ) : (
-
-                                                        <div className="no-image">
-                                                            No Image
-                                                        </div>
-
-                                                    )}
-
-                                                    <span className="product-view">
-                                                        View Product
-                                                        <ArrowRight
-                                                            size={14}
-                                                        />
-                                                    </span>
-
-                                                </Link>
-
-
-                                                <div className="product-info">
-
-                                                    <span className="product-category">
-                                                        {
-                                                            product.category
-                                                        }
-                                                    </span>
-
-                                                    <h3>
-                                                        {
-                                                            product.name
-                                                        }
-                                                    </h3>
-
-
-                                                    <div className="product-price-row">
-
-                                                        <strong>
-                                                            Rs.{" "}
-                                                            {
-                                                                formatPrice(
-                                                                    product.price
-                                                                )
-                                                            }
-                                                        </strong>
-
-
-                                                        <Link
-                                                            to={`/products/${product._id}`}
-                                                            className="product-arrow"
-                                                        >
-
-                                                            <ArrowRight
-                                                                size={15}
-                                                            />
-
-                                                        </Link>
-
-                                                    </div>
-
-                                                </div>
-
-                                            </article>
-
-                                        )
-                                    )}
-
-                                </div>
-
-                            )}
-
-                    </div>
-
-                </section>
-
-
-                {/* ==================================
-                    SECTION 4 — EXPERIENCE
-                ================================== */}
-
-                <section
-                    className={`snap-section experience-section ${
-                        activeSection === 3
-                            ? "section-active"
-                            : ""
-                    }`}
-                    data-index="3"
-                >
-
-                    <div className="experience-background"></div>
-
-
-                    <div className="section-container">
-
-                        <div className="experience-layout">
-
-
-                            {/* Left */}
-
-                            <div className="experience-text">
-
-                                <p className="section-label">
-                                    THE SHOPHUB EXPERIENCE
-                                </p>
-
-                                <h2>
-                                    Simple shopping.
-                                    <span>
-                                        Beautiful experience.
-                                    </span>
-                                </h2>
-
-                                <p className="experience-description">
-
-                                    We keep shopping simple,
-                                    clean and convenient so
-                                    you can focus on finding
-                                    the products you actually need.
-
-                                </p>
-
-
-                                <Link
-                                    to="/products"
-                                    className="experience-button"
-                                >
-
-                                    Explore ShopHub
-
-                                    <ArrowRight size={17} />
-
-                                </Link>
-
-                            </div>
-
-
-                            {/* Right */}
-
-                            <div className="experience-features">
-
-                                <article className="experience-card">
-
-                                    <div className="experience-icon">
-                                        <Truck size={23} />
-                                    </div>
-
-                                    <div>
-
-                                        <span>
-                                            01
-                                        </span>
-
-                                        <h3>
-                                            Easy Shopping
-                                        </h3>
-
-                                        <p>
-                                            Browse products and
-                                            build your cart with ease.
-                                        </p>
-
-                                    </div>
-
-                                </article>
-
-
-                                <article className="experience-card">
-
-                                    <div className="experience-icon">
-                                        <ShieldCheck
-                                            size={23}
-                                        />
-                                    </div>
-
-                                    <div>
-
-                                        <span>
-                                            02
-                                        </span>
-
-                                        <h3>
-                                            Secure Account
-                                        </h3>
-
-                                        <p>
-                                            Your account and
-                                            orders stay protected.
-                                        </p>
-
-                                    </div>
-
-                                </article>
-
-
-                                <article className="experience-card">
-
-                                    <div className="experience-icon">
-                                        <Sparkles size={23} />
-                                    </div>
-
-                                    <div>
-
-                                        <span>
-                                            03
-                                        </span>
-
-                                        <h3>
-                                            Quality Collection
-                                        </h3>
-
-                                        <p>
-                                            Discover products
-                                            selected for everyday needs.
-                                        </p>
-
-                                    </div>
-
-                                </article>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-                {/* ==================================
-                    SECTION 5 — CTA
-                ================================== */}
-
-                <section
-                    className={`snap-section final-section ${
-                        activeSection === 4
-                            ? "section-active"
-                            : ""
-                    }`}
-                    data-index="4"
-                >
-
-                    <div className="final-orb final-orb-one"></div>
-                    <div className="final-orb final-orb-two"></div>
-
-
-                    <div className="final-content">
-
-                        <div className="final-icon">
-                            <ShoppingBag size={28} />
-                        </div>
-
-                        <p className="section-label">
-                            SHOPHUB
-                        </p>
-
-                        <h2>
-                            Your next favorite
-                            <span>
-                                product is waiting.
-                            </span>
-                        </h2>
-
-                        <p>
-                            Explore the collection and
-                            discover something you'll love.
-                        </p>
-
-
                         <Link
                             to="/products"
-                            className="final-button"
+                            className="btn btn-outline btn-sm"
                         >
+                            View all products
 
-                            Start Shopping
-
-                            <ArrowRight size={18} />
-
+                            <ArrowRight size={17} />
                         </Link>
 
                     </div>
 
 
-                    <footer className="final-footer">
+                    <div className="categories-grid">
 
-                        <strong>
-                            Shop<span>Hub</span>
-                        </strong>
+                        {categories.map((category, index) => (
 
-                        <span>
-                            © {new Date().getFullYear()} ShopHub
-                        </span>
+                            <Link
+                                to={`/products?category=${encodeURIComponent(category.name)}`}
+                                className="category-card reveal"
+                                style={{ "--i": index + 1 }}
+                                key={category.name}
+                            >
+
+                                <div className="category-media">
+
+                                    <img
+                                        src={category.image}
+                                        alt={category.name}
+                                        className="category-image"
+                                    />
+
+                                </div>
+
+                                <div className="category-caption">
+
+                                    <div>
+
+                                        <h3>
+                                            {category.name}
+                                        </h3>
+
+                                        <p>
+                                            {category.description}
+                                        </p>
+
+                                    </div>
+
+                                    <span className="category-arrow">
+                                        <ArrowRight size={19} />
+                                    </span>
+
+                                </div>
+
+                            </Link>
+
+                        ))}
+
+                    </div>
+
+                </section>
+
+
+                {/* ======================================
+                    SLIDE 3 - FEATURED PRODUCTS
+                ====================================== */}
+
+                <section
+                    className={`snap-section products-section${activeSection === 2 ? " is-active" : ""}`}
+                    data-index="2"
+                >
+
+                    <div className="section-header reveal">
+
+                        <div className="section-header-text">
+
+                            <h2>
+                                Featured products
+                            </h2>
+
+                            <p>
+                                Take a look at some of our latest products.
+                            </p>
+
+                        </div>
+
+                        <Link
+                            to="/products"
+                            className="btn btn-outline btn-sm"
+                        >
+                            View all products
+
+                            <ArrowRight size={17} />
+                        </Link>
+
+                    </div>
+
+
+                    {loading ? (
+
+                        <div className="products-message reveal">
+                            <div className="loading-spinner"></div>
+
+                            <p>
+                                Loading products...
+                            </p>
+                        </div>
+
+                    ) : error ? (
+
+                        <div className="products-message error-message reveal">
+                            <p>{error}</p>
+                        </div>
+
+                    ) : featuredProducts.length > 0 ? (
+
+                        <div className="products-grid">
+
+                            {featuredProducts.map((product, index) => (
+
+                                <Link
+                                    to={`/products/${product._id}`}
+                                    className="product-card reveal"
+                                    style={{ "--i": index + 1 }}
+                                    key={product._id}
+                                >
+
+                                    <div className="product-media">
+
+                                        <img
+                                            src={product.image}
+                                            alt={product.name}
+                                            className="product-image"
+                                        />
+
+                                        <span className="product-badge">
+                                            New
+                                        </span>
+
+                                        <span className="product-cta">
+                                            View product
+
+                                            <ArrowRight size={17} />
+                                        </span>
+
+                                    </div>
+
+
+                                    <div className="product-details">
+
+                                        <span className="product-category">
+                                            {product.category}
+                                        </span>
+
+                                        <h3>
+                                            {product.name}
+                                        </h3>
+
+                                        <p className="product-price">
+                                            <span>PKR</span>{" "}
+                                            {formatPrice(product.price)}
+                                        </p>
+
+                                    </div>
+
+                                </Link>
+
+                            ))}
+
+                        </div>
+
+                    ) : (
+
+                        <div className="products-message reveal">
+                            <ShoppingBag size={35} />
+
+                            <h3>
+                                Products are coming soon
+                            </h3>
+
+                            <p>
+                                Check back later to explore our collection.
+                            </p>
+                        </div>
+
+                    )}
+
+                </section>
+
+
+                {/* ======================================
+                    SLIDE 4 - SHOPPING EXPERIENCE
+                ====================================== */}
+
+                <section
+                    className={`snap-section experience-section${activeSection === 3 ? " is-active" : ""}`}
+                    data-index="3"
+                >
+
+                    <div className="experience-top reveal">
+
+                        <div>
+
+                            <span className="dark-label">
+                                The ShopHub experience
+                            </span>
+
+                            <h2>
+                                Shopping made simple.
+                            </h2>
+
+                        </div>
+
+
+                        <div className="experience-top-text">
+
+                            <p>
+                                Everything you need for a smooth and
+                                enjoyable shopping experience, from
+                                browsing to checkout.
+                            </p>
+
+                            <Link
+                                to="/products"
+                                className="btn btn-light"
+                            >
+                                Explore Products
+
+                                <ArrowRight size={19} />
+                            </Link>
+
+                        </div>
+
+                    </div>
+
+
+                    <div className="experience-grid">
+
+                        <div
+                            className="experience-item reveal"
+                            style={{ "--i": 1 }}
+                        >
+
+                            <Zap size={30} strokeWidth={1.6} />
+
+                            <h3>
+                                Easy Shopping
+                            </h3>
+
+                            <p>
+                                Explore categories and discover products
+                                with a simple, convenient experience.
+                            </p>
+
+                        </div>
+
+
+                        <div
+                            className="experience-item reveal"
+                            style={{ "--i": 2 }}
+                        >
+
+                            <ShieldCheck size={30} strokeWidth={1.6} />
+
+                            <h3>
+                                Your Account
+                            </h3>
+
+                            <p>
+                                Access your account and manage your
+                                shopping activity in one place.
+                            </p>
+
+                        </div>
+
+
+                        <div
+                            className="experience-item reveal"
+                            style={{ "--i": 3 }}
+                        >
+
+                            <Star size={30} strokeWidth={1.6} />
+
+                            <h3>
+                                Quality Collection
+                            </h3>
+
+                            <p>
+                                Browse a growing collection of products
+                                across different categories.
+                            </p>
+
+                        </div>
+
+
+                        <div
+                            className="experience-item reveal"
+                            style={{ "--i": 4 }}
+                        >
+
+                            <Truck size={30} strokeWidth={1.6} />
+
+                            <h3>
+                                Shop with Ease
+                            </h3>
+
+                            <p>
+                                Find what you need without the hassle
+                                of searching across multiple stores.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                {/* ======================================
+                    SLIDE 5 - FINAL BANNER + FOOTER
+                ====================================== */}
+
+                <section
+                    className={`snap-section final-section${activeSection === 4 ? " is-active" : ""}`}
+                    data-index="4"
+                >
+
+                    <div className="final-banner reveal">
+
+                        <img
+                            className="final-banner-image"
+                            src="https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=2000&q=90"
+                            alt="Shop the latest collection"
+                        />
+
+                        <div className="final-banner-overlay"></div>
+
+                        <div className="final-banner-content">
+
+                            <span className="dark-label">
+                                Your next favorite is waiting
+                            </span>
+
+                            <h2>
+                                Ready to find something amazing?
+                            </h2>
+
+                            <p>
+                                Explore our collection and find products
+                                that fit your style and everyday needs.
+                            </p>
+
+                            <Link
+                                to="/products"
+                                className="btn btn-light"
+                            >
+                                Start Shopping
+
+                                <ArrowRight size={19} />
+                            </Link>
+
+                        </div>
+
+                    </div>
+
+
+                    {/* Footer */}
+
+                    <footer
+                        className="home-footer reveal"
+                        style={{ "--i": 2 }}
+                    >
+
+                        <div className="footer-top">
+
+                            <div className="footer-about">
+
+                                <Link
+                                    to="/"
+                                    className="footer-brand"
+                                >
+                                    <ShoppingBag size={22} />
+
+                                    <span>
+                                        Shop<span>Hub</span>
+                                    </span>
+                                </Link>
+
+                                <p>
+                                    Discover more. Shop better.
+                                </p>
+
+                            </div>
+
+
+                            <div className="footer-column">
+
+                                <h4>Shop</h4>
+
+                                {categories.map((category) => (
+
+                                    <Link
+                                        key={category.name}
+                                        to={`/products?category=${encodeURIComponent(category.name)}`}
+                                    >
+                                        {category.name}
+                                    </Link>
+
+                                ))}
+
+                            </div>
+
+
+                            <div className="footer-column">
+
+                                <h4>Account</h4>
+
+                                <Link to="/my-orders">
+                                    My Orders
+                                </Link>
+
+                                <Link to="/wishlist">
+                                    Wishlist
+                                </Link>
+
+                                <Link to="/cart">
+                                    Cart
+                                </Link>
+
+                            </div>
+
+                        </div>
+
+
+                        <div className="footer-bottom">
+
+                            <span>
+                                © {new Date().getFullYear()} ShopHub.
+                                All rights reserved.
+                            </span>
+
+                        </div>
 
                     </footer>
 
@@ -1009,11 +866,11 @@ function Home() {
             </main>
 
 
-            {/* ==================================
-                SIDE NAVIGATION
-            ================================== */}
+            {/* ======================================
+                SLIDE NAVIGATION
+            ====================================== */}
 
-            <div className="section-navigation">
+            <div className="home-section-navigation">
 
                 {[
                     "Home",
@@ -1021,65 +878,67 @@ function Home() {
                     "Products",
                     "Experience",
                     "Shop"
-                ].map(
-                    (label, index) => (
+                ].map((label, index) => (
 
-                        <button
-                            key={label}
-                            className={
-                                activeSection === index
-                                    ? "active"
-                                    : ""
-                            }
-                            onClick={() =>
-                                goToSection(index)
-                            }
-                        >
+                    <button
+                        key={label}
+                        className={
+                            activeSection === index
+                                ? "section-nav-dot active"
+                                : "section-nav-dot"
+                        }
+                        onClick={() => goToSection(index)}
+                        aria-label={`Go to ${label}`}
+                        title={label}
+                    >
 
-                            <span>
-                                {label}
-                            </span>
+                        <span className="section-nav-tooltip">
+                            {label}
+                        </span>
 
-                            <i></i>
+                    </button>
 
-                        </button>
-
-                    )
-                )}
+                ))}
 
             </div>
 
 
-            {/* ==================================
-                LEFT / RIGHT ARROWS
-            ================================== */}
+            {/* ======================================
+                PREVIOUS / NEXT NAVIGATION
+            ====================================== */}
 
-            {activeSection > 0 && (
+            <div className="home-arrow-navigation">
 
                 <button
-                    className="page-arrow page-arrow-up"
                     onClick={previousSection}
+                    disabled={activeSection === 0}
+                    aria-label="Previous slide"
+                    title="Previous slide"
                 >
-                    ↑
+                    <ChevronDown
+                        size={20}
+                        className="arrow-up"
+                    />
                 </button>
-
-            )}
-
-            {activeSection < 4 && (
 
                 <button
-                    className="page-arrow page-arrow-down"
                     onClick={nextSection}
+                    disabled={activeSection === 4}
+                    aria-label="Next slide"
+                    title="Next slide"
                 >
-                    ↓
+                    <ChevronDown size={20} />
                 </button>
 
-            )}
+            </div>
 
         </div>
-
     );
-
 }
+
+
+// ==========================================
+// EXPORT HOME COMPONENT
+// ==========================================
 
 export default Home;

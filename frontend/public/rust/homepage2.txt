@@ -1,0 +1,2902 @@
+
+// ==========================================
+// IMPORTS
+// ==========================================
+
+import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+
+import {
+    ArrowRight,
+    ShoppingBag,
+    ChevronDown,
+    ChevronRight,
+    Sparkles,
+    ShieldCheck,
+    Truck,
+    Star,
+    Zap
+} from "lucide-react";
+
+import api from "../services/api";
+import Navbar from "../components/Navbar";
+
+import "../styles/Home.css";
+
+
+// ==========================================
+// HOME PAGE
+// ==========================================
+
+function Home() {
+
+    // ==========================================
+    // STATE
+    // ==========================================
+
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+
+    const [activeSection, setActiveSection] = useState(0);
+
+    const containerRef = useRef(null);
+
+
+    // ==========================================
+    // CATEGORIES
+    // ==========================================
+
+    const categories = [
+        {
+            name: "Electronics",
+            subtitle: "Smart technology",
+            image:
+                "https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=1200&q=85"
+        },
+        {
+            name: "Clothing",
+            subtitle: "Everyday style",
+            image:
+                "https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=1200&q=85"
+        },
+        {
+            name: "Shoes",
+            subtitle: "Step into style",
+            image:
+                "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1200&q=85"
+        },
+        {
+            name: "Accessories",
+            subtitle: "Complete your look",
+            image:
+                "https://images.unsplash.com/photo-1523779917675-b6ed3a42a561?auto=format&fit=crop&w=1200&q=85"
+        }
+    ];
+
+
+    // ==========================================
+    // FETCH PRODUCTS
+    // ==========================================
+
+    useEffect(() => {
+
+        const fetchProducts = async () => {
+
+            try {
+
+                setLoading(true);
+                setError("");
+
+                const response = await api.get("/products");
+
+                setProducts(
+                    Array.isArray(response.data)
+                        ? response.data
+                        : response.data.products || []
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "FETCH PRODUCTS ERROR:",
+                    error
+                );
+
+                setError(
+                    error.response?.data?.message ||
+                    "Unable to load products."
+                );
+
+            } finally {
+
+                setLoading(false);
+
+            }
+
+        };
+
+        fetchProducts();
+
+    }, []);
+
+
+    // ==========================================
+    // DETECT ACTIVE SECTION
+    // ==========================================
+
+    useEffect(() => {
+
+        const container = containerRef.current;
+
+        if (!container) return;
+
+        const sections =
+            container.querySelectorAll(".snap-section");
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+
+                entries.forEach((entry) => {
+
+                    if (
+                        entry.isIntersecting &&
+                        entry.intersectionRatio >= 0.55
+                    ) {
+
+                        setActiveSection(
+                            Number(
+                                entry.target.dataset.index
+                            )
+                        );
+
+                    }
+
+                });
+
+            },
+            {
+                root: container,
+                threshold: [0.55, 0.7]
+            }
+        );
+
+        sections.forEach((section) => {
+            observer.observe(section);
+        });
+
+        return () => {
+            observer.disconnect();
+        };
+
+    }, []);
+
+
+    // ==========================================
+    // FEATURED PRODUCTS
+    // ==========================================
+
+    const featuredProducts =
+        products.slice(0, 4);
+
+
+    // ==========================================
+    // PRICE FORMAT
+    // ==========================================
+
+    const formatPrice = (price) => {
+
+        return Number(price || 0).toLocaleString("en-PK");
+
+    };
+
+
+    // ==========================================
+    // GO TO SECTION
+    // ==========================================
+
+    const goToSection = (index) => {
+
+        const container = containerRef.current;
+
+        if (!container) return;
+
+        const sections =
+            container.querySelectorAll(".snap-section");
+
+        if (!sections[index]) return;
+
+        sections[index].scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+    };
+
+
+    // ==========================================
+    // NEXT SECTION
+    // ==========================================
+
+    const nextSection = () => {
+
+        if (activeSection < 4) {
+            goToSection(activeSection + 1);
+        }
+
+    };
+
+
+    // ==========================================
+    // PREVIOUS SECTION
+    // ==========================================
+
+    const previousSection = () => {
+
+        if (activeSection > 0) {
+            goToSection(activeSection - 1);
+        }
+
+    };
+
+
+    // ==========================================
+    // RETURN
+    // ==========================================
+
+    return (
+
+        <div className="home-page">
+
+            {/* ==================================
+                NAVBAR
+            ================================== */}
+
+            <Navbar />
+
+
+            {/* ==================================
+                PAGE CONTAINER
+            ================================== */}
+
+            <main
+                className="home-snap-container"
+                ref={containerRef}
+            >
+
+
+                {/* ==================================
+                    SECTION 1 — HERO
+                ================================== */}
+
+                <section
+                    className={`snap-section hero-section ${
+                        activeSection === 0
+                            ? "section-active"
+                            : ""
+                    }`}
+                    data-index="0"
+                >
+
+                    {/* Animated background */}
+
+                    <div className="hero-orb orb-one"></div>
+                    <div className="hero-orb orb-two"></div>
+                    <div className="hero-grid"></div>
+
+
+                    {/* Hero content */}
+
+                    <div className="hero-content">
+
+                        <div className="hero-label">
+
+                            <span className="label-dot"></span>
+
+                            NEW COLLECTION
+
+                        </div>
+
+
+                        <h1>
+
+                            Shop smarter.
+                            <span>
+                                Live better.
+                            </span>
+
+                        </h1>
+
+
+                        <p className="hero-description">
+
+                            Discover products you'll love,
+                            explore new collections and
+                            find everything you need in
+                            one simple shopping experience.
+
+                        </p>
+
+
+                        <div className="hero-buttons">
+
+                            <Link
+                                to="/products"
+                                className="hero-main-button"
+                            >
+
+                                <ShoppingBag size={18} />
+
+                                Start Shopping
+
+                                <ArrowRight size={17} />
+
+                            </Link>
+
+
+                            <Link
+                                to="/products"
+                                className="hero-outline-button"
+                            >
+
+                                Explore Collection
+
+                            </Link>
+
+                        </div>
+
+
+                        {/* Stats */}
+
+                        <div className="hero-stats">
+
+                            <div>
+                                <strong>
+                                    {products.length}+
+                                </strong>
+
+                                <span>
+                                    Products
+                                </span>
+                            </div>
+
+
+                            <div className="stat-line"></div>
+
+
+                            <div>
+                                <strong>
+                                    4
+                                </strong>
+
+                                <span>
+                                    Categories
+                                </span>
+                            </div>
+
+
+                            <div className="stat-line"></div>
+
+
+                            <div>
+                                <strong>
+                                    24/7
+                                </strong>
+
+                                <span>
+                                    Shopping
+                                </span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    {/* Hero visual */}
+
+                    <div className="hero-visual">
+
+                        <div className="hero-glow"></div>
+
+
+                        <div className="hero-product-card">
+
+                            <div className="hero-product-top">
+
+                                <span>
+                                    SHOPHUB
+                                </span>
+
+                                <Sparkles size={17} />
+
+                            </div>
+
+
+                            <div className="hero-bag">
+
+                                <ShoppingBag
+                                    size={95}
+                                    strokeWidth={1}
+                                />
+
+                            </div>
+
+
+                            <div className="hero-product-bottom">
+
+                                <span>
+                                    DISCOVER MORE
+                                </span>
+
+                                <ArrowRight size={17} />
+
+                            </div>
+
+                        </div>
+
+
+                        <div className="floating-card floating-card-one">
+
+                            <div className="floating-icon">
+                                <Zap size={17} />
+                            </div>
+
+                            <div>
+                                <strong>
+                                    New Arrivals
+                                </strong>
+
+                                <span>
+                                    Just added
+                                </span>
+                            </div>
+
+                        </div>
+
+
+                        <div className="floating-card floating-card-two">
+
+                            <Star
+                                size={16}
+                                fill="currentColor"
+                            />
+
+                            <strong>
+                                Great products
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    {/* Scroll */}
+
+                    <button
+                        className="hero-scroll"
+                        onClick={nextSection}
+                    >
+
+                        <span>
+                            Scroll to explore
+                        </span>
+
+                        <ChevronDown size={19} />
+
+                    </button>
+
+                </section>
+
+
+                {/* ==================================
+                    SECTION 2 — CATEGORIES
+                ================================== */}
+
+                <section
+                    className={`snap-section category-section ${
+                        activeSection === 1
+                            ? "section-active"
+                            : ""
+                    }`}
+                    data-index="1"
+                >
+
+                    <div className="section-container">
+
+                        <div className="section-header">
+
+                            <div>
+
+                                <p className="section-label">
+                                    EXPLORE
+                                </p>
+
+                                <h2>
+                                    Find your style.
+                                </h2>
+
+                            </div>
+
+                            <p>
+                                Explore our popular
+                                categories and discover
+                                products made for everyday life.
+                            </p>
+
+                        </div>
+
+
+                        <div className="category-grid">
+
+                            {categories.map(
+                                (category, index) => (
+
+                                    <Link
+                                        to={`/products?category=${encodeURIComponent(category.name)}`}
+                                        className="category-card"
+                                        key={category.name}
+                                        style={{
+                                            "--delay":
+                                                `${index * 0.12}s`
+                                        }}
+                                    >
+
+                                        <img
+                                            src={category.image}
+                                            alt={category.name}
+                                        />
+
+
+                                        <div className="category-number">
+                                            0{index + 1}
+                                        </div>
+
+
+                                        <div className="category-gradient"></div>
+
+
+                                        <div className="category-info">
+
+                                            <span>
+                                                {
+                                                    category.subtitle
+                                                }
+                                            </span>
+
+                                            <h3>
+                                                {
+                                                    category.name
+                                                }
+                                            </h3>
+
+                                            <div className="category-explore">
+
+                                                Explore
+
+                                                <ArrowRight
+                                                    size={15}
+                                                />
+
+                                            </div>
+
+                                        </div>
+
+                                    </Link>
+
+                                )
+                            )}
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                {/* ==================================
+                    SECTION 3 — PRODUCTS
+                ================================== */}
+
+                <section
+                    className={`snap-section product-section ${
+                        activeSection === 2
+                            ? "section-active"
+                            : ""
+                    }`}
+                    data-index="2"
+                >
+
+                    <div className="section-container">
+
+                        <div className="product-heading">
+
+                            <div>
+
+                                <p className="section-label">
+                                    SHOPHUB PICKS
+                                </p>
+
+                                <h2>
+                                    Featured products.
+                                </h2>
+
+                                <p>
+                                    A few products from our
+                                    growing collection.
+                                </p>
+
+                            </div>
+
+
+                            <Link
+                                to="/products"
+                                className="all-products"
+                            >
+
+                                View all products
+
+                                <ArrowRight
+                                    size={16}
+                                />
+
+                            </Link>
+
+                        </div>
+
+
+                        {loading && (
+
+                            <div className="product-loading">
+                                Loading products...
+                            </div>
+
+                        )}
+
+
+                        {!loading &&
+                            error && (
+
+                                <div className="product-loading error">
+                                    {error}
+                                </div>
+
+                            )}
+
+
+                        {!loading &&
+                            !error &&
+                            featuredProducts.length === 0 && (
+
+                                <div className="product-loading">
+                                    No products available.
+                                </div>
+
+                            )}
+
+
+                        {!loading &&
+                            !error &&
+                            featuredProducts.length > 0 && (
+
+                                <div className="product-grid">
+
+                                    {featuredProducts.map(
+                                        (
+                                            product,
+                                            index
+                                        ) => (
+
+                                            <article
+                                                className="product-card"
+                                                key={product._id}
+                                                style={{
+                                                    "--delay":
+                                                        `${index * 0.12}s`
+                                                }}
+                                            >
+
+                                                <Link
+                                                    to={`/products/${product._id}`}
+                                                    className="product-image"
+                                                >
+
+                                                    {product.image ? (
+
+                                                        <img
+                                                            src={
+                                                                product.image
+                                                            }
+                                                            alt={
+                                                                product.name
+                                                            }
+                                                        />
+
+                                                    ) : (
+
+                                                        <div className="no-image">
+                                                            No Image
+                                                        </div>
+
+                                                    )}
+
+                                                    <span className="product-view">
+                                                        View Product
+                                                        <ArrowRight
+                                                            size={14}
+                                                        />
+                                                    </span>
+
+                                                </Link>
+
+
+                                                <div className="product-info">
+
+                                                    <span className="product-category">
+                                                        {
+                                                            product.category
+                                                        }
+                                                    </span>
+
+                                                    <h3>
+                                                        {
+                                                            product.name
+                                                        }
+                                                    </h3>
+
+
+                                                    <div className="product-price-row">
+
+                                                        <strong>
+                                                            Rs.{" "}
+                                                            {
+                                                                formatPrice(
+                                                                    product.price
+                                                                )
+                                                            }
+                                                        </strong>
+
+
+                                                        <Link
+                                                            to={`/products/${product._id}`}
+                                                            className="product-arrow"
+                                                        >
+
+                                                            <ArrowRight
+                                                                size={15}
+                                                            />
+
+                                                        </Link>
+
+                                                    </div>
+
+                                                </div>
+
+                                            </article>
+
+                                        )
+                                    )}
+
+                                </div>
+
+                            )}
+
+                    </div>
+
+                </section>
+
+
+                {/* ==================================
+                    SECTION 4 — EXPERIENCE
+                ================================== */}
+
+                <section
+                    className={`snap-section experience-section ${
+                        activeSection === 3
+                            ? "section-active"
+                            : ""
+                    }`}
+                    data-index="3"
+                >
+
+                    <div className="experience-background"></div>
+
+
+                    <div className="section-container">
+
+                        <div className="experience-layout">
+
+
+                            {/* Left */}
+
+                            <div className="experience-text">
+
+                                <p className="section-label">
+                                    THE SHOPHUB EXPERIENCE
+                                </p>
+
+                                <h2>
+                                    Simple shopping.
+                                    <span>
+                                        Beautiful experience.
+                                    </span>
+                                </h2>
+
+                                <p className="experience-description">
+
+                                    We keep shopping simple,
+                                    clean and convenient so
+                                    you can focus on finding
+                                    the products you actually need.
+
+                                </p>
+
+
+                                <Link
+                                    to="/products"
+                                    className="experience-button"
+                                >
+
+                                    Explore ShopHub
+
+                                    <ArrowRight size={17} />
+
+                                </Link>
+
+                            </div>
+
+
+                            {/* Right */}
+
+                            <div className="experience-features">
+
+                                <article className="experience-card">
+
+                                    <div className="experience-icon">
+                                        <Truck size={23} />
+                                    </div>
+
+                                    <div>
+
+                                        <span>
+                                            01
+                                        </span>
+
+                                        <h3>
+                                            Easy Shopping
+                                        </h3>
+
+                                        <p>
+                                            Browse products and
+                                            build your cart with ease.
+                                        </p>
+
+                                    </div>
+
+                                </article>
+
+
+                                <article className="experience-card">
+
+                                    <div className="experience-icon">
+                                        <ShieldCheck
+                                            size={23}
+                                        />
+                                    </div>
+
+                                    <div>
+
+                                        <span>
+                                            02
+                                        </span>
+
+                                        <h3>
+                                            Secure Account
+                                        </h3>
+
+                                        <p>
+                                            Your account and
+                                            orders stay protected.
+                                        </p>
+
+                                    </div>
+
+                                </article>
+
+
+                                <article className="experience-card">
+
+                                    <div className="experience-icon">
+                                        <Sparkles size={23} />
+                                    </div>
+
+                                    <div>
+
+                                        <span>
+                                            03
+                                        </span>
+
+                                        <h3>
+                                            Quality Collection
+                                        </h3>
+
+                                        <p>
+                                            Discover products
+                                            selected for everyday needs.
+                                        </p>
+
+                                    </div>
+
+                                </article>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                {/* ==================================
+                    SECTION 5 — CTA
+                ================================== */}
+
+                <section
+                    className={`snap-section final-section ${
+                        activeSection === 4
+                            ? "section-active"
+                            : ""
+                    }`}
+                    data-index="4"
+                >
+
+                    <div className="final-orb final-orb-one"></div>
+                    <div className="final-orb final-orb-two"></div>
+
+
+                    <div className="final-content">
+
+                        <div className="final-icon">
+                            <ShoppingBag size={28} />
+                        </div>
+
+                        <p className="section-label">
+                            SHOPHUB
+                        </p>
+
+                        <h2>
+                            Your next favorite
+                            <span>
+                                product is waiting.
+                            </span>
+                        </h2>
+
+                        <p>
+                            Explore the collection and
+                            discover something you'll love.
+                        </p>
+
+
+                        <Link
+                            to="/products"
+                            className="final-button"
+                        >
+
+                            Start Shopping
+
+                            <ArrowRight size={18} />
+
+                        </Link>
+
+                    </div>
+
+
+                    <footer className="final-footer">
+
+                        <strong>
+                            Shop<span>Hub</span>
+                        </strong>
+
+                        <span>
+                            © {new Date().getFullYear()} ShopHub
+                        </span>
+
+                    </footer>
+
+                </section>
+
+            </main>
+
+
+            {/* ==================================
+                SIDE NAVIGATION
+            ================================== */}
+
+            <div className="section-navigation">
+
+                {[
+                    "Home",
+                    "Categories",
+                    "Products",
+                    "Experience",
+                    "Shop"
+                ].map(
+                    (label, index) => (
+
+                        <button
+                            key={label}
+                            className={
+                                activeSection === index
+                                    ? "active"
+                                    : ""
+                            }
+                            onClick={() =>
+                                goToSection(index)
+                            }
+                        >
+
+                            <span>
+                                {label}
+                            </span>
+
+                            <i></i>
+
+                        </button>
+
+                    )
+                )}
+
+            </div>
+
+
+            {/* ==================================
+                LEFT / RIGHT ARROWS
+            ================================== */}
+
+            {activeSection > 0 && (
+
+                <button
+                    className="page-arrow page-arrow-up"
+                    onClick={previousSection}
+                >
+                    ↑
+                </button>
+
+            )}
+
+            {activeSection < 4 && (
+
+                <button
+                    className="page-arrow page-arrow-down"
+                    onClick={nextSection}
+                >
+                    ↓
+                </button>
+
+            )}
+
+        </div>
+
+    );
+
+}
+
+export default Home;
+
+
+
+
+
+
+
+//css
+
+/* ==========================================
+   SHOPHUB HOME PAGE
+   Theme: White, Light Gray, Violet & Orange
+========================================== */
+
+.home-page {
+    --home-primary: #6558ed;
+    --home-primary-dark: #5145d4;
+    --home-primary-light: #f0efff;
+    --home-orange: #f59b20;
+    --home-text: #252735;
+    --home-muted: #858b9b;
+    --home-border: #edf0f4;
+    --home-background: #f5f6f8;
+
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    background: #ffffff;
+    color: var(--home-text);
+}
+
+.home-page *,
+.home-page *::before,
+.home-page *::after {
+    box-sizing: border-box;
+}
+
+/* ==========================================
+   SNAP CONTAINER
+========================================== */
+
+.home-snap-container {
+    width: 100%;
+    height: calc(100vh - 70px);
+    overflow-y: scroll;
+    overflow-x: hidden;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+}
+
+.home-snap-container::-webkit-scrollbar {
+    display: none;
+}
+
+/* ==========================================
+   SECTIONS
+========================================== */
+
+.snap-section {
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 70px);
+    min-height: calc(100vh - 70px);
+    overflow: hidden;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+}
+
+/* ==========================================
+   COMMON STYLES
+========================================== */
+
+.section-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 84%;
+    max-width: 1280px;
+    height: 100%;
+    margin: auto;
+}
+
+.section-label {
+    margin: 0 0 12px;
+    color: var(--home-primary);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2.5px;
+}
+
+.section-header h2,
+.product-heading h2 {
+    margin: 0;
+    color: var(--home-text);
+    font-size: clamp(40px, 4vw, 58px);
+    line-height: 1;
+    letter-spacing: -2.5px;
+}
+
+.section-header > p,
+.product-heading > div > p:last-child {
+    max-width: 380px;
+    margin: 0;
+    color: var(--home-muted);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+/* ==========================================
+   HERO SECTION
+========================================== */
+
+.hero-section {
+    display: flex;
+    align-items: center;
+    background:
+        radial-gradient(
+            circle at 75% 40%,
+            rgba(101, 88, 237, 0.12),
+            transparent 30%
+        ),
+        linear-gradient(
+            120deg,
+            #ffffff 20%,
+            #f8f8ff
+        );
+}
+
+/* ==========================================
+   HERO GRID
+========================================== */
+
+.hero-grid {
+    position: absolute;
+    inset: 0;
+    opacity: 0.4;
+    background-image:
+        linear-gradient(
+            rgba(101, 88, 237, 0.045) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(101, 88, 237, 0.045) 1px,
+            transparent 1px
+        );
+    background-size: 55px 55px;
+    mask-image: linear-gradient(
+        to right,
+        transparent,
+        black,
+        transparent
+    );
+    animation: gridMove 20s linear infinite;
+}
+
+@keyframes gridMove {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(55px);
+    }
+}
+
+/* ==========================================
+   HERO ORBS
+========================================== */
+
+.hero-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(2px);
+    pointer-events: none;
+}
+
+.orb-one {
+    width: 430px;
+    height: 430px;
+    right: -180px;
+    top: -130px;
+    background: radial-gradient(
+        circle,
+        rgba(101, 88, 237, 0.13),
+        transparent 70%
+    );
+    animation: orbFloat 7s ease-in-out infinite;
+}
+
+.orb-two {
+    width: 250px;
+    height: 250px;
+    left: 40%;
+    bottom: -160px;
+    background: radial-gradient(
+        circle,
+        rgba(245, 155, 32, 0.12),
+        transparent 70%
+    );
+    animation: orbFloat 9s ease-in-out infinite reverse;
+}
+
+@keyframes orbFloat {
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(-25px, 30px);
+    }
+}
+
+/* ==========================================
+   HERO CONTENT
+========================================== */
+
+.hero-content {
+    position: relative;
+    z-index: 3;
+    width: 55%;
+    margin-left: 8%;
+    padding-top: 10px;
+}
+
+.hero-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    margin-bottom: 20px;
+    padding: 7px 12px;
+    border: 1px solid #dedbff;
+    border-radius: 30px;
+    background: #f0efff;
+    color: var(--home-primary);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    opacity: 0;
+    transform: translateY(25px);
+}
+
+.section-active .hero-label {
+    animation: revealUp 0.6s 0.1s forwards;
+}
+
+.label-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--home-orange);
+    box-shadow: 0 0 0 5px rgba(245, 155, 32, 0.12);
+    animation: pulseDot 1.8s infinite;
+}
+
+@keyframes pulseDot {
+    50% {
+        box-shadow: 0 0 0 8px rgba(245, 155, 32, 0.04);
+    }
+}
+
+.hero-content h1 {
+    max-width: 720px;
+    margin: 0;
+    color: var(--home-text);
+    font-size: clamp(52px, 6vw, 86px);
+    line-height: 0.98;
+    letter-spacing: -4px;
+    font-weight: 750;
+    opacity: 0;
+    transform: translateY(45px);
+}
+
+.section-active .hero-content h1 {
+    animation: revealUp 0.8s 0.2s forwards;
+}
+
+.hero-content h1 span {
+    display: block;
+    color: var(--home-primary);
+}
+
+.hero-description {
+    max-width: 520px;
+    margin: 25px 0;
+    color: #777d8d;
+    font-size: 15px;
+    line-height: 1.8;
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.section-active .hero-description {
+    animation: revealUp 0.7s 0.35s forwards;
+}
+
+/* ==========================================
+   HERO BUTTONS
+========================================== */
+
+.hero-buttons {
+    display: flex;
+    gap: 10px;
+    opacity: 0;
+    transform: translateY(25px);
+}
+
+.section-active .hero-buttons {
+    animation: revealUp 0.7s 0.45s forwards;
+}
+
+.hero-main-button,
+.hero-outline-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    min-height: 48px;
+    padding: 0 20px;
+    border-radius: 7px;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 700;
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        background 0.25s ease;
+}
+
+.hero-main-button {
+    border: 1px solid var(--home-primary);
+    background: var(--home-primary);
+    color: #ffffff;
+    box-shadow: 0 10px 25px rgba(101, 88, 237, 0.2);
+}
+
+.hero-main-button:hover {
+    background: var(--home-primary-dark);
+    transform: translateY(-4px);
+    box-shadow: 0 15px 30px rgba(101, 88, 237, 0.25);
+}
+
+.hero-outline-button {
+    border: 1px solid #e1e3eb;
+    background: #ffffff;
+    color: var(--home-text);
+}
+
+.hero-outline-button:hover {
+    border-color: var(--home-primary);
+    color: var(--home-primary);
+    transform: translateY(-4px);
+}
+
+/* ==========================================
+   HERO STATS
+========================================== */
+
+.hero-stats {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    margin-top: 42px;
+    opacity: 0;
+}
+
+.section-active .hero-stats {
+    animation: revealUp 0.7s 0.6s forwards;
+}
+
+.hero-stats div:not(.stat-line) {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.hero-stats strong {
+    color: var(--home-text);
+    font-size: 17px;
+}
+
+.hero-stats span {
+    color: #9297a5;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.stat-line {
+    width: 1px;
+    height: 28px;
+    background: #e2e4eb;
+}
+
+/* ==========================================
+   HERO VISUAL
+========================================== */
+
+.hero-visual {
+    position: absolute;
+    z-index: 2;
+    width: 390px;
+    height: 480px;
+    right: 9%;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.hero-glow {
+    position: absolute;
+    width: 330px;
+    height: 330px;
+    left: 30px;
+    top: 70px;
+    border-radius: 50%;
+    background: radial-gradient(
+        circle,
+        rgba(101, 88, 237, 0.17),
+        transparent 68%
+    );
+    filter: blur(8px);
+    animation: glowPulse 4s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+
+    50% {
+        transform: scale(1.15);
+        opacity: 1;
+    }
+}
+
+/* ==========================================
+   HERO PRODUCT CARD
+========================================== */
+
+.hero-product-card {
+    position: absolute;
+    width: 290px;
+    height: 365px;
+    left: 50%;
+    top: 50%;
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    background: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.98),
+        rgba(242, 240, 255, 0.96)
+    );
+    box-shadow: 0 35px 70px rgba(37, 39, 53, 0.13);
+    backdrop-filter: blur(15px);
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(5deg);
+}
+
+.section-active .hero-product-card {
+    animation:
+        cardEnter 1s 0.3s forwards,
+        cardFloat 5s 1.5s ease-in-out infinite;
+}
+
+@keyframes cardEnter {
+    from {
+        opacity: 0;
+        transform: translate(-30%, -45%) rotate(-8deg) scale(0.8);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) rotate(5deg) scale(1);
+    }
+}
+
+@keyframes cardFloat {
+    0%,
+    100% {
+        margin-top: 0;
+    }
+
+    50% {
+        margin-top: -14px;
+    }
+}
+
+.hero-product-top,
+.hero-product-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.hero-product-top {
+    color: var(--home-primary);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.hero-product-bottom {
+    color: #777d8d;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+.hero-bag {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 275px;
+    color: var(--home-primary);
+}
+
+.hero-bag svg {
+    filter: drop-shadow(0 15px 20px rgba(101, 88, 237, 0.2));
+}
+
+/* ==========================================
+   FLOATING CARDS
+========================================== */
+
+.floating-card {
+    position: absolute;
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    border: 1px solid var(--home-border);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 15px 35px rgba(37, 39, 53, 0.1);
+    backdrop-filter: blur(12px);
+    opacity: 0;
+}
+
+.section-active .floating-card-one {
+    animation:
+        floatingEnter 0.7s 0.9s forwards,
+        floatingOne 4s 1.6s ease-in-out infinite;
+}
+
+.section-active .floating-card-two {
+    animation:
+        floatingEnter 0.7s 1.05s forwards,
+        floatingTwo 4.5s 1.8s ease-in-out infinite;
+}
+
+.floating-card-one {
+    top: 65px;
+    right: -15px;
+}
+
+.floating-card-two {
+    left: -5px;
+    bottom: 85px;
+}
+
+.floating-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 7px;
+    background: #f0efff;
+    color: var(--home-primary);
+}
+
+.floating-card-two .floating-icon {
+    background: #fff4e4;
+    color: var(--home-orange);
+}
+
+.floating-card strong {
+    display: block;
+    color: var(--home-text);
+    font-size: 11px;
+}
+
+.floating-card span {
+    display: block;
+    margin-top: 2px;
+    color: #9297a5;
+    font-size: 9px;
+}
+
+@keyframes floatingEnter {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes floatingOne {
+    0%,
+    100% {
+        margin-top: 0;
+    }
+
+    50% {
+        margin-top: -10px;
+    }
+}
+
+@keyframes floatingTwo {
+    0%,
+    100% {
+        margin-bottom: 0;
+    }
+
+    50% {
+        margin-bottom: 12px;
+    }
+}
+
+/* ==========================================
+   HERO SCROLL
+========================================== */
+
+.hero-scroll {
+    position: absolute;
+    z-index: 5;
+    left: 50%;
+    bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    border: none;
+    background: transparent;
+    color: #9297a5;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 9px;
+    animation: scrollBounce 2s infinite;
+    transform: translateX(-50%);
+}
+
+.hero-scroll svg {
+    color: var(--home-primary);
+}
+
+@keyframes scrollBounce {
+    0%,
+    100% {
+        transform: translateX(-50%) translateY(0);
+    }
+
+    50% {
+        transform: translateX(-50%) translateY(7px);
+    }
+}
+
+/* ==========================================
+   CATEGORY SECTION
+========================================== */
+
+.category-section {
+    background: #ffffff;
+}
+
+.section-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 35px;
+}
+
+.section-header h2 {
+    opacity: 0;
+    transform: translateX(-35px);
+}
+
+.section-active .section-header h2 {
+    animation: revealLeft 0.7s 0.1s forwards;
+}
+
+.section-header .section-label {
+    opacity: 0;
+}
+
+.section-active .section-header .section-label {
+    animation: revealUp 0.5s forwards;
+}
+
+.section-header > p {
+    opacity: 0;
+    transform: translateX(30px);
+}
+
+.section-active .section-header > p {
+    animation: revealRight 0.7s 0.25s forwards;
+}
+
+/* ==========================================
+   CATEGORY GRID
+========================================== */
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.category-card {
+    position: relative;
+    height: 370px;
+    overflow: hidden;
+    border-radius: 10px;
+    text-decoration: none;
+    background: #f0efff;
+    opacity: 0;
+    transform: translateY(50px) scale(0.95);
+}
+
+.section-active .category-card {
+    animation: categoryReveal 0.7s var(--delay) forwards;
+}
+
+@keyframes categoryReveal {
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.category-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s ease;
+}
+
+.category-card:hover img {
+    transform: scale(1.1);
+}
+
+.category-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to top,
+        rgba(37, 39, 53, 0.8),
+        rgba(37, 39, 53, 0.02) 70%
+    );
+}
+
+.category-number {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.category-info {
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    color: #ffffff;
+}
+
+.category-info > span {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 9px;
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.category-info h3 {
+    margin: 0 0 10px;
+    font-size: 25px;
+}
+
+.category-explore {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    font-weight: 700;
+    opacity: 0.9;
+}
+
+/* ==========================================
+   PRODUCT SECTION
+========================================== */
+
+.product-section {
+    background: var(--home-background);
+}
+
+.product-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 35px;
+}
+
+.product-heading > div {
+    opacity: 0;
+    transform: translateX(-35px);
+}
+
+.section-active .product-heading > div {
+    animation: revealLeft 0.7s 0.1s forwards;
+}
+
+.product-heading > div > p:last-child {
+    margin-top: 10px;
+}
+
+.all-products {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--home-primary);
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 700;
+    opacity: 0;
+}
+
+.section-active .all-products {
+    animation: revealRight 0.6s 0.3s forwards;
+}
+
+.all-products:hover {
+    color: var(--home-primary-dark);
+    text-decoration: underline;
+}
+
+/* ==========================================
+   PRODUCT GRID
+========================================== */
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.product-card {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--home-border);
+    border-radius: 9px;
+    background: #ffffff;
+    box-shadow: 0 2px 7px rgba(37, 39, 53, 0.025);
+    opacity: 0;
+    transform: translateY(55px) scale(0.96);
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        border-color 0.3s ease;
+}
+
+.section-active .product-card {
+    animation: productReveal 0.7s var(--delay) forwards;
+}
+
+@keyframes productReveal {
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    border-color: #dedbff;
+    box-shadow: 0 14px 30px rgba(37, 39, 53, 0.08);
+}
+
+/* ==========================================
+   PRODUCT IMAGE
+========================================== */
+
+.product-image {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 175px;
+    overflow: hidden;
+    background: #f8f8fa;
+    text-decoration: none;
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    padding: 12px;
+    object-fit: contain;
+    transition: transform 0.6s ease;
+}
+
+.product-card:hover .product-image img {
+    transform: scale(1.05);
+}
+
+.no-image {
+    color: #9297a5;
+    font-size: 11px;
+}
+
+.product-view {
+    position: absolute;
+    left: 50%;
+    bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 12px;
+    border-radius: 5px;
+    background: rgba(101, 88, 237, 0.96);
+    color: #ffffff;
+    font-size: 9px;
+    font-weight: 700;
+    transform: translate(-50%, 20px);
+    opacity: 0;
+    transition: 0.3s ease;
+}
+
+.product-card:hover .product-view {
+    transform: translate(-50%, 0);
+    opacity: 1;
+}
+
+/* ==========================================
+   PRODUCT INFO
+========================================== */
+
+.product-info {
+    padding: 14px;
+}
+
+.product-category {
+    margin: 0 0 7px;
+    color: var(--home-primary);
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.product-info h3 {
+    margin: 0 0 15px;
+    overflow: hidden;
+    color: #303443;
+    font-size: 13px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.product-price-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.product-price-row strong {
+    color: var(--home-primary);
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.product-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: 1px solid #e9e7ff;
+    border-radius: 50%;
+    background: var(--home-primary-light);
+    color: var(--home-primary);
+    text-decoration: none;
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.product-arrow:hover {
+    transform: translateX(3px);
+    background: var(--home-primary);
+    color: #ffffff;
+}
+
+/* ==========================================
+   LOADING
+========================================== */
+
+.product-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    color: var(--home-muted);
+    font-size: 13px;
+}
+
+.product-loading.error {
+    color: #c13d5d;
+}
+
+/* ==========================================
+   EXPERIENCE SECTION
+========================================== */
+
+.experience-section {
+    background: #252735;
+    color: #ffffff;
+}
+
+.experience-background {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    right: -250px;
+    top: -150px;
+    border-radius: 50%;
+    background: radial-gradient(
+        circle,
+        rgba(101, 88, 237, 0.3),
+        transparent 65%
+    );
+    animation: experienceGlow 6s ease-in-out infinite;
+}
+
+@keyframes experienceGlow {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.15);
+    }
+}
+
+.experience-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 100px;
+    align-items: center;
+}
+
+.experience-text .section-label {
+    opacity: 0;
+}
+
+.section-active .experience-text .section-label {
+    animation: revealUp 0.5s forwards;
+}
+
+.experience-text h2 {
+    margin: 0;
+    color: #ffffff;
+    font-size: clamp(42px, 5vw, 68px);
+    line-height: 0.98;
+    letter-spacing: -3px;
+    opacity: 0;
+    transform: translateX(-40px);
+}
+
+.section-active .experience-text h2 {
+    animation: revealLeft 0.8s 0.15s forwards;
+}
+
+.experience-text h2 span {
+    display: block;
+    color: #a69eff;
+}
+
+.experience-description {
+    max-width: 480px;
+    margin: 25px 0;
+    color: #c1c3cf;
+    font-size: 14px;
+    line-height: 1.8;
+    opacity: 0;
+}
+
+.section-active .experience-description {
+    animation: revealUp 0.7s 0.35s forwards;
+}
+
+.experience-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 18px;
+    border: 1px solid var(--home-primary);
+    border-radius: 6px;
+    background: var(--home-primary);
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 700;
+    opacity: 0;
+    transition: background 0.2s ease;
+}
+
+.section-active .experience-button {
+    animation: revealUp 0.6s 0.5s forwards;
+}
+
+.experience-button:hover {
+    background: var(--home-primary-dark);
+}
+
+/* ==========================================
+   EXPERIENCE CARDS
+========================================== */
+
+.experience-features {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.experience-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    padding: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.045);
+    opacity: 0;
+    transform: translateX(50px);
+    transition:
+        background 0.3s ease,
+        transform 0.3s ease;
+}
+
+.section-active .experience-card:nth-child(1) {
+    animation: revealRight 0.7s 0.15s forwards;
+}
+
+.section-active .experience-card:nth-child(2) {
+    animation: revealRight 0.7s 0.3s forwards;
+}
+
+.section-active .experience-card:nth-child(3) {
+    animation: revealRight 0.7s 0.45s forwards;
+}
+
+.experience-card:hover {
+    background: rgba(101, 88, 237, 0.15);
+    transform: translateX(-5px);
+}
+
+.experience-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    background: rgba(101, 88, 237, 0.2);
+    color: #b0aaff;
+}
+
+.experience-card:nth-child(2) .experience-icon {
+    background: rgba(245, 155, 32, 0.14);
+    color: #ffc16a;
+}
+
+.experience-card span {
+    color: #b0b2c0;
+    font-size: 9px;
+}
+
+.experience-card h3 {
+    margin: 5px 0;
+    color: #ffffff;
+    font-size: 15px;
+}
+
+.experience-card p {
+    margin: 0;
+    color: #c1c3cf;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+/* ==========================================
+   FINAL SECTION
+========================================== */
+
+.final-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(101, 88, 237, 0.1),
+            transparent 35%
+        ),
+        #f8f8fc;
+}
+
+.final-orb {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.final-orb-one {
+    width: 350px;
+    height: 350px;
+    left: -170px;
+    top: -130px;
+    background: radial-gradient(
+        circle,
+        rgba(101, 88, 237, 0.13),
+        transparent 70%
+    );
+    animation: finalFloat 8s infinite ease-in-out;
+}
+
+.final-orb-two {
+    width: 300px;
+    height: 300px;
+    right: -150px;
+    bottom: -130px;
+    background: radial-gradient(
+        circle,
+        rgba(245, 155, 32, 0.12),
+        transparent 70%
+    );
+    animation: finalFloat 7s infinite ease-in-out reverse;
+}
+
+@keyframes finalFloat {
+    50% {
+        transform: translate(30px, -25px) scale(1.1);
+    }
+}
+
+.final-content {
+    position: relative;
+    z-index: 2;
+}
+
+.final-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 58px;
+    height: 58px;
+    margin: 0 auto 22px;
+    border: 1px solid var(--home-border);
+    border-radius: 50%;
+    background: #ffffff;
+    color: var(--home-primary);
+    box-shadow: 0 15px 30px rgba(101, 88, 237, 0.1);
+    opacity: 0;
+    transform: scale(0.5);
+}
+
+.section-active .final-icon {
+    animation: iconPop 0.7s 0.1s forwards;
+}
+
+@keyframes iconPop {
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.final-content h2 {
+    max-width: 750px;
+    margin: 0 auto;
+    color: var(--home-text);
+    font-size: clamp(45px, 6vw, 80px);
+    line-height: 0.98;
+    letter-spacing: -4px;
+    opacity: 0;
+    transform: translateY(35px);
+}
+
+.section-active .final-content h2 {
+    animation: revealUp 0.8s 0.2s forwards;
+}
+
+.final-content h2 span {
+    display: block;
+    color: var(--home-primary);
+}
+
+.final-content > p:not(.section-label) {
+    margin: 25px auto;
+    color: var(--home-muted);
+    font-size: 14px;
+    opacity: 0;
+}
+
+.section-active .final-content > p:not(.section-label) {
+    animation: revealUp 0.7s 0.35s forwards;
+}
+
+.final-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 48px;
+    padding: 0 22px;
+    border: 1px solid var(--home-primary);
+    border-radius: 7px;
+    background: var(--home-primary);
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 700;
+    box-shadow: 0 12px 30px rgba(101, 88, 237, 0.2);
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        background 0.25s ease;
+}
+
+.section-active .final-button {
+    animation: revealUp 0.7s 0.5s forwards;
+}
+
+.final-button:hover {
+    background: var(--home-primary-dark);
+    transform: translateY(-4px);
+    box-shadow: 0 18px 35px rgba(101, 88, 237, 0.25);
+}
+
+/* ==========================================
+   FOOTER
+========================================== */
+
+.final-footer {
+    position: absolute;
+    left: 8%;
+    right: 8%;
+    bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    padding-top: 14px;
+    border-top: 1px solid #e7e6f0;
+    color: #858b9b;
+    font-size: 9px;
+}
+
+.final-footer strong {
+    color: var(--home-text);
+    font-size: 15px;
+}
+
+.final-footer strong span {
+    color: var(--home-primary);
+}
+
+/* ==========================================
+   SIDE NAVIGATION
+========================================== */
+
+.section-navigation {
+    position: fixed;
+    z-index: 100;
+    top: 50%;
+    right: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    transform: translateY(-50%);
+}
+
+.section-navigation button {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.section-navigation button span {
+    color: #777d8d;
+    font-size: 8px;
+    opacity: 0;
+    transform: translateX(5px);
+    transition: 0.25s ease;
+}
+
+.section-navigation button:hover span,
+.section-navigation button.active span {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.section-navigation i {
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #c9cbd5;
+    transition: 0.3s ease;
+}
+
+.section-navigation button.active i {
+    height: 24px;
+    border-radius: 5px;
+    background: var(--home-primary);
+}
+
+/* ==========================================
+   PAGE ARROWS
+========================================== */
+
+.page-arrow {
+    position: fixed;
+    z-index: 100;
+    left: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border: 1px solid #e6e8ef;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    color: #6e7486;
+    cursor: pointer;
+    font-size: 15px;
+    backdrop-filter: blur(8px);
+    transition: 0.25s ease;
+}
+
+.page-arrow:hover {
+    border-color: var(--home-primary);
+    color: var(--home-primary);
+    transform: scale(1.08);
+}
+
+.page-arrow-up {
+    top: 45%;
+}
+
+.page-arrow-down {
+    top: 52%;
+}
+
+/* ==========================================
+   ANIMATION HELPERS
+========================================== */
+
+@keyframes revealUp {
+    from {
+        opacity: 0;
+        transform: translateY(35px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes revealLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes revealRight {
+    from {
+        opacity: 0;
+        transform: translateX(40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ==========================================
+   RESPONSIVE: LAPTOP
+========================================== */
+
+@media (max-width: 1100px) {
+    .hero-content {
+        width: 60%;
+        margin-left: 6%;
+    }
+
+    .hero-visual {
+        right: 4%;
+        transform: translateY(-50%) scale(0.85);
+    }
+
+    .category-grid,
+    .product-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .category-card {
+        height: 260px;
+    }
+}
+
+/* ==========================================
+   RESPONSIVE: TABLET
+========================================== */
+
+@media (max-width: 800px) {
+    .hero-visual {
+        display: none;
+    }
+
+    .hero-content {
+        width: 85%;
+        margin: auto;
+        text-align: center;
+    }
+
+    .hero-label,
+    .hero-description {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .hero-buttons,
+    .hero-stats {
+        justify-content: center;
+    }
+
+    .section-container {
+        width: 88%;
+    }
+
+    .section-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .experience-layout {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .experience-text h2 {
+        font-size: 45px;
+    }
+}
+
+/* ==========================================
+   RESPONSIVE: MOBILE
+========================================== */
+
+@media (max-width: 600px) {
+    .home-snap-container {
+        height: calc(100vh - 62px);
+    }
+
+    .snap-section {
+        height: calc(100vh - 62px);
+        min-height: calc(100vh - 62px);
+        overflow-y: auto;
+    }
+
+    .hero-content h1 {
+        font-size: 44px;
+        letter-spacing: -2px;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+    }
+
+    .hero-main-button,
+    .hero-outline-button {
+        width: 100%;
+    }
+
+    .hero-stats {
+        gap: 12px;
+        margin-top: 28px;
+    }
+
+    .hero-stats strong {
+        font-size: 14px;
+    }
+
+    .hero-stats span {
+        font-size: 7px;
+    }
+
+    .section-container {
+        width: 90%;
+        padding-top: 25px;
+        padding-bottom: 25px;
+    }
+
+    .section-header h2,
+    .product-heading h2 {
+        font-size: 35px;
+        letter-spacing: -1.5px;
+    }
+
+    .category-grid,
+    .product-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .category-card {
+        height: 180px;
+    }
+
+    .category-info {
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+    }
+
+    .category-info h3 {
+        font-size: 17px;
+    }
+
+    .category-number {
+        top: 10px;
+        right: 10px;
+    }
+
+    .product-image {
+        height: 135px;
+    }
+
+    .product-info {
+        padding: 10px;
+    }
+
+    .product-info h3 {
+        margin-bottom: 10px;
+        font-size: 11px;
+    }
+
+    .product-category {
+        font-size: 8px;
+    }
+
+    .product-price-row strong {
+        font-size: 12px;
+    }
+
+    .product-arrow {
+        width: 27px;
+        height: 27px;
+    }
+
+    .product-view {
+        display: none;
+    }
+
+    .product-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .experience-text h2 {
+        font-size: 38px;
+        letter-spacing: -1.5px;
+    }
+
+    .experience-card {
+        gap: 12px;
+        padding: 15px;
+    }
+
+    .experience-icon {
+        min-width: 40px;
+        height: 40px;
+    }
+
+    .section-navigation {
+        right: 8px;
+    }
+
+    .section-navigation button span {
+        display: none;
+    }
+
+    .page-arrow {
+        display: none;
+    }
+
+    .final-content h2 {
+        font-size: 43px;
+        letter-spacing: -2px;
+    }
+
+    .final-footer {
+        left: 6%;
+        right: 6%;
+        bottom: 12px;
+        font-size: 8px;
+    }
+
+    .final-footer strong {
+        font-size: 12px;
+    }
+}
+
+/* ==========================================
+   SMALL MOBILE
+========================================== */
+
+@media (max-width: 380px) {
+    .hero-content h1 {
+        font-size: 38px;
+    }
+
+    .hero-description {
+        font-size: 13px;
+    }
+
+    .hero-stats {
+        gap: 8px;
+    }
+
+    .category-grid,
+    .product-grid {
+        gap: 8px;
+    }
+
+    .product-image {
+        height: 115px;
+    }
+
+    .product-info {
+        padding: 8px;
+    }
+
+    .product-info h3 {
+        font-size: 10px;
+    }
+
+    .product-price-row strong {
+        font-size: 11px;
+    }
+
+    .experience-text h2 {
+        font-size: 33px;
+    }
+
+    .final-content h2 {
+        font-size: 36px;
+    }
+}
+
+/* ==========================================
+   ACCESSIBILITY
+========================================== */
+
+.home-page button:focus-visible,
+.home-page a:focus-visible {
+    outline: 2px solid var(--home-primary);
+    outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .home-page *,
+    .home-page *::before,
+    .home-page *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+    }
+}

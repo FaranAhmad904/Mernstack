@@ -1,4 +1,3 @@
-
 import {
     useEffect,
     useMemo,
@@ -22,7 +21,9 @@ import {
     RotateCcw,
     Star,
     CheckCircle,
-    AlertCircle
+    AlertCircle,
+    ChevronDown,
+    ArrowRight
 } from "lucide-react";
 
 import api from "../services/api";
@@ -77,6 +78,14 @@ function Products()
     const [wishlistMessage, setWishlistMessage] = useState("");
 
     const [wishlistError, setWishlistError] = useState("");
+
+    // UI only: how many products are shown in one row
+    const [columns, setColumns] = useState(4);
+
+    // UI only: filter panel open on desktop, closed on mobile
+    const [filtersOpen, setFiltersOpen] = useState(
+        () => window.innerWidth > 900
+    );
 
 
     // ==========================================
@@ -557,6 +566,60 @@ function Products()
 
 
     // ==========================================
+    // ACTIVE FILTER CHIPS (UI ONLY)
+    // ==========================================
+
+    const activeChips = [];
+
+    if (searchTerm.trim())
+    {
+        activeChips.push({
+            key: "search",
+            label: `Search: ${searchTerm.trim()}`,
+            onRemove: () => setSearchTerm("")
+        });
+    }
+
+    if (
+        minPrice > 0 ||
+        maxPrice < Math.min(priceCeiling, 200000)
+    )
+    {
+        activeChips.push({
+            key: "price",
+            label: `Rs. ${formatPrice(minPrice)} – Rs. ${formatPrice(maxPrice)}`,
+            onRemove: () =>
+            {
+                setMinPrice(0);
+                setMaxPrice(priceCeiling);
+            }
+        });
+    }
+
+    selectedBrands.forEach((brand) =>
+    {
+        activeChips.push({
+            key: `brand-${brand}`,
+            label: brand,
+            onRemove: () => toggleBrand(brand)
+        });
+    });
+
+    if (minRating > 0)
+    {
+        activeChips.push({
+            key: "rating",
+            label: `${minRating} stars & up`,
+            onRemove: () => setMinRating(0)
+        });
+    }
+
+    const sidebarFilterCount = activeChips.filter(
+        (chip) => chip.key !== "search"
+    ).length;
+
+
+    // ==========================================
     // UI
     // ==========================================
 
@@ -565,651 +628,577 @@ function Products()
 
             <Navbar />
 
-            <main className="catalog-shell">
+            <div className="catalog-wrap">
 
-                {/* LEFT FILTER SIDEBAR */}
+                {/* PAGE HEADER */}
 
-                <aside className="catalog-sidebar">
+                <header className="catalog-header">
 
-                    <div className="filter-title">
-
-                        <SlidersHorizontal size={17} />
-
-                        <h2>Filters</h2>
-
-                    </div>
-
-
-                    {/* PRICE RANGE */}
-
-                    <section className="filter-section">
-
-                        <h3>Price Range</h3>
-
-                        <div className="price-inputs">
-
-                            <label>
-                                <span>Min (Rs.)</span>
-
-                                <input
-                                    type="number"
-                                    min="0"
-                                    value={minPrice}
-                                    onChange={(e) =>
-                                    {
-                                        setMinPrice(
-                                            Math.max(
-                                                0,
-                                                Number(e.target.value) || 0
-                                            )
-                                        );
-                                    }}
-                                />
-                            </label>
-
-                            <label>
-                                <span>Max (Rs.)</span>
-
-                                <input
-                                    type="number"
-                                    min={minPrice}
-                                    value={maxPrice}
-                                    onChange={(e) =>
-                                    {
-                                        setMaxPrice(
-                                            Math.max(
-                                                minPrice,
-                                                Number(e.target.value) || 0
-                                            )
-                                        );
-                                    }}
-                                />
-                            </label>
-
-                        </div>
-
-                        <input
-                            className="price-range"
-                            aria-label="Maximum price"
-                            type="range"
-                            min="0"
-                            max={priceCeiling}
-                            value={Math.min(
-                                maxPrice,
-                                priceCeiling
-                            )}
-                            onChange={(e) =>
-                            {
-                                setMaxPrice(
-                                    Math.max(
-                                        minPrice,
-                                        Number(e.target.value)
-                                    )
-                                );
-                            }}
-                        />
-
-                        <div className="price-caption">
-
-                            <span>
-                                Rs. {formatPrice(minPrice)}
-                            </span>
-
-                            <span>
-                                Rs. {formatPrice(maxPrice)}
-                            </span>
-
-                        </div>
-
-                    </section>
-
-
-                    {/* CATEGORY FILTER */}
-
-                    <section className="filter-section">
-
-                        <h3>Category</h3>
-
-                        <div className="filter-links">
-
-                            <Link
-                                className={
-                                    selectedCategory.toLowerCase() === "all"
-                                        ? "active"
-                                        : ""
-                                }
-                                to="/products"
-                            >
-                                All Products
-
-                                <span>{products.length}</span>
-                            </Link>
-
-                            {categories.slice(0, 7).map((category) => (
-                                <Link
-                                    key={category}
-                                    className={
-                                        selectedCategory.toLowerCase() ===
-                                        category.toLowerCase()
-                                            ? "active"
-                                            : ""
-                                    }
-                                    to={`/products?category=${encodeURIComponent(
-                                        category
-                                    )}`}
-                                >
-                                    {category}
-
-                                    <span>
-                                        {
-                                            products.filter(
-                                                (product) =>
-                                                    product.category === category
-                                            ).length
-                                        }
-                                    </span>
-                                </Link>
-                            ))}
-
-                            {categories.length > 7 && (
-                                <details className="more-filters">
-
-                                    <summary>See more</summary>
-
-                                    {categories.slice(7).map((category) => (
-                                        <Link
-                                            key={category}
-                                            to={`/products?category=${encodeURIComponent(
-                                                category
-                                            )}`}
-                                        >
-                                            {category}
-                                        </Link>
-                                    ))}
-
-                                </details>
-                            )}
-
-                        </div>
-
-                    </section>
-
-
-                    {/* BRAND FILTER */}
-
-                    {brands.length > 0 && (
-                        <section className="filter-section">
-
-                            <h3>Brands</h3>
-
-                            <div className="checkbox-list">
-
-                                {brands.map((brand) => (
-                                    <label key={brand}>
-
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedBrands.includes(brand)}
-                                            onChange={() => toggleBrand(brand)}
-                                        />
-
-                                        <span>{brand}</span>
-
-                                        <small>
-                                            {
-                                                products.filter(
-                                                    (product) =>
-                                                        product.brand === brand
-                                                ).length
-                                            }
-                                        </small>
-
-                                    </label>
-                                ))}
-
-                            </div>
-
-                        </section>
-                    )}
-
-
-                    {/* RATING FILTER */}
-
-                    <section className="filter-section">
-
-                        <h3>Ratings</h3>
-
-                        <div className="rating-filters">
-
-                            {[5, 4, 3, 2, 1].map((rating) => (
-                                <label
-                                    key={rating}
-                                    className={
-                                        minRating === rating
-                                            ? "selected"
-                                            : ""
-                                    }
-                                >
-
-                                    <input
-                                        type="radio"
-                                        name="rating"
-                                        checked={minRating === rating}
-                                        onChange={() => setMinRating(rating)}
-                                    />
-
-                                    <span
-                                        className="rating-stars"
-                                        aria-label={`${rating} stars`}
-                                    >
-                                        {Array.from(
-                                            { length: 5 },
-                                            (_, i) => (
-                                                <Star
-                                                    key={i}
-                                                    size={12}
-                                                    fill={
-                                                        i < rating
-                                                            ? "currentColor"
-                                                            : "none"
-                                                    }
-                                                />
-                                            )
-                                        )}
-                                    </span>
-
-                                    <span>{rating} & up</span>
-
-                                </label>
-                            ))}
-
-                            {minRating > 0 && (
-                                <button
-                                    className="clear-rating"
-                                    type="button"
-                                    onClick={() => setMinRating(0)}
-                                >
-                                    Clear rating
-                                </button>
-                            )}
-
-                        </div>
-
-                    </section>
-
-
-                    {/* RESET FILTERS */}
-
-                    <button
-                        className="reset-filters"
-                        type="button"
-                        onClick={resetFilters}
+                    <nav
+                        className="breadcrumb"
+                        aria-label="Breadcrumb"
                     >
-                        <RotateCcw size={14} />
+                        <Link to="/">Home</Link>
 
-                        Reset filters
-                    </button>
+                        <span>/</span>
 
-                </aside>
+                        <Link to="/products">Products</Link>
 
+                        {selectedCategory.toLowerCase() !== "all" && (
+                            <>
+                                <span>/</span>
 
-                {/* MAIN PRODUCTS SECTION */}
+                                <strong>{selectedCategory}</strong>
+                            </>
+                        )}
+                    </nav>
 
-                <section className="catalog-main">
+                    <div className="catalog-header-row">
 
-                    {/* TOP TOOLBAR */}
+                        <h1>
+                            {selectedCategory.toLowerCase() === "all"
+                                ? "Discover Products"
+                                : selectedCategory}
+                        </h1>
 
-                    <div className="catalog-toolbar">
-
-                        <div className="catalog-search">
-
-                            <Search size={17} />
-
-                            <input
-                                type="search"
-                                placeholder="Search products..."
-                                value={searchTerm}
-                                onChange={(e) =>
-                                {
-                                    setSearchTerm(e.target.value);
-                                }}
-                                aria-label="Search products"
-                            />
-
-                            {searchTerm && (
-                                <button
-                                    type="button"
-                                    aria-label="Clear search"
-                                    onClick={() => setSearchTerm("")}
-                                >
-                                    <X size={15} />
-                                </button>
-                            )}
-
-                        </div>
-
-
-                        <div className="toolbar-right">
-
-                            <span className="result-count">
-                                Showing {sortedProducts.length ? 1 : 0}–
-                                {sortedProducts.length} of {products.length} results
-                            </span>
-
-                            <label className="sort-control">
-
-                                <span>Sort by:</span>
-
-                                <select
-                                    value={sortBy}
-                                    onChange={(e) => setSortBy(e.target.value)}
-                                    aria-label="Sort products"
-                                >
-                                    <option value="default">Top Rated</option>
-                                    <option value="price-low">Price ↑</option>
-                                    <option value="price-high">Price ↓</option>
-                                    <option value="name-asc">Name A–Z</option>
-                                    <option value="name-desc">Name Z–A</option>
-                                </select>
-
-                            </label>
-
-
-                            <div className="view-toggle">
-
-                                <button
-                                    type="button"
-                                    className={
-                                        viewMode === "grid" ? "active" : ""
-                                    }
-                                    onClick={() => setViewMode("grid")}
-                                    aria-label="Grid view"
-                                >
-                                    <Grid2X2 size={16} />
-                                </button>
-
-                                <button
-                                    type="button"
-                                    className={
-                                        viewMode === "list" ? "active" : ""
-                                    }
-                                    onClick={() => setViewMode("list")}
-                                    aria-label="List view"
-                                >
-                                    <List size={17} />
-                                </button>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    {/* PAGE HEADING */}
-
-                    <div className="catalog-heading">
-
-                        <div>
-
-                            <p className="eyebrow">
-                                SHOPHUB COLLECTION
-                            </p>
-
-                            <h1>
-                                {selectedCategory.toLowerCase() === "all"
-                                    ? "Discover Products"
-                                    : selectedCategory}
-                            </h1>
-
-                        </div>
-
-                        <span className="mobile-result-count">
+                        <span className="header-count">
                             {sortedProducts.length} products
                         </span>
 
                     </div>
 
 
-                    {/* WISHLIST TOAST NOTIFICATION */}
+                    {/* CATEGORY TABS */}
 
-                    {(wishlistMessage || wishlistError) && (
-                        <div
-                            className={`wishlist-toast ${
-                                wishlistError
-                                    ? "toast-error"
-                                    : "toast-success"
-                            }`}
-                            role={wishlistError ? "alert" : "status"}
-                            key={wishlistError || wishlistMessage}
+                    <div className="category-tabs">
+
+                        <Link
+                            className={
+                                selectedCategory.toLowerCase() === "all"
+                                    ? "active"
+                                    : ""
+                            }
+                            to="/products"
                         >
+                            All
+                        </Link>
 
-                            <div className="wishlist-toast-icon">
+                        {categories.map((category) => (
+                            <Link
+                                key={category}
+                                className={
+                                    selectedCategory.toLowerCase() ===
+                                    category.toLowerCase()
+                                        ? "active"
+                                        : ""
+                                }
+                                to={`/products?category=${encodeURIComponent(
+                                    category
+                                )}`}
+                            >
+                                {category}
+                            </Link>
+                        ))}
 
-                                {wishlistError ? (
-                                    <AlertCircle size={21} />
-                                ) : (
-                                    <CheckCircle size={21} />
-                                )}
+                    </div>
 
-                            </div>
+                </header>
 
-                            <div className="wishlist-toast-content">
 
-                                <strong>
-                                    {wishlistError
-                                        ? "Something went wrong"
-                                        : "Wishlist Updated"}
-                                </strong>
+                {/* TOOLBAR */}
 
-                                <p>
-                                    {wishlistError || wishlistMessage}
-                                </p>
+                <div className="catalog-toolbar">
 
-                                {!wishlistError && (
-                                    <Link to="/wishlist">
-                                        View Wishlist
-                                    </Link>
-                                )}
+                    <button
+                        type="button"
+                        className={`filter-toggle ${
+                            filtersOpen ? "is-open" : ""
+                        }`}
+                        onClick={() => setFiltersOpen((open) => !open)}
+                        aria-expanded={filtersOpen}
+                    >
+                        <SlidersHorizontal size={16} />
 
-                            </div>
+                        <span>Filters</span>
 
+                        {sidebarFilterCount > 0 && (
+                            <b>{sidebarFilterCount}</b>
+                        )}
+                    </button>
+
+
+                    <div className="catalog-search">
+
+                        <Search size={17} />
+
+                        <input
+                            type="search"
+                            placeholder="Search products..."
+                            value={searchTerm}
+                            onChange={(e) =>
+                            {
+                                setSearchTerm(e.target.value);
+                            }}
+                            aria-label="Search products"
+                        />
+
+                        {searchTerm && (
                             <button
                                 type="button"
-                                className="wishlist-toast-close"
-                                onClick={() =>
-                                {
-                                    setWishlistMessage("");
-
-                                    setWishlistError("");
-                                }}
-                                aria-label="Dismiss notification"
+                                aria-label="Clear search"
+                                onClick={() => setSearchTerm("")}
                             >
-                                <X size={18} />
+                                <X size={15} />
                             </button>
+                        )}
 
-                        </div>
-                    )}
-
-
-                    {/* LOADING */}
-
-                    {loading && (
-                        <div className="catalog-message">
-
-                            <div className="loading-spinner" />
-
-                            <h2>Loading products</h2>
-
-                            <p>
-                                Please wait while we load the latest collection.
-                            </p>
-
-                        </div>
-                    )}
+                    </div>
 
 
-                    {/* ERROR */}
+                    <div className="toolbar-right">
 
-                    {!loading && error && (
-                        <div className="catalog-message error">
+                        <span className="result-count">
+                            Showing {sortedProducts.length ? 1 : 0}–
+                            {sortedProducts.length} of {products.length} results
+                        </span>
 
-                            <h2>Unable to load products</h2>
+                        <label className="sort-control">
 
-                            <p>{error}</p>
+                            <span>Sort by</span>
 
-                            <button
-                                type="button"
-                                onClick={() => window.location.reload()}
+                            <select
+                                value={sortBy}
+                                onChange={(e) => setSortBy(e.target.value)}
+                                aria-label="Sort products"
                             >
-                                Try Again
-                            </button>
+                                <option value="default">Top Rated</option>
+                                <option value="price-low">Price ↑</option>
+                                <option value="price-high">Price ↓</option>
+                                <option value="name-asc">Name A–Z</option>
+                                <option value="name-desc">Name Z–A</option>
+                            </select>
 
-                        </div>
-                    )}
+                        </label>
 
 
-                    {/* EMPTY RESULTS */}
+                        {/* PRODUCTS PER ROW */}
 
-                    {!loading &&
-                        !error &&
-                        sortedProducts.length === 0 && (
-                            <div className="catalog-message">
+                        {viewMode === "grid" && (
+                            <div
+                                className="column-picker"
+                                role="group"
+                                aria-label="Products per row"
+                            >
 
-                                <Search size={30} />
+                                <span>Per row</span>
 
-                                <h2>No matching products</h2>
+                                {[2, 3, 4, 5].map((count) => (
+                                    <button
+                                        key={count}
+                                        type="button"
+                                        className={
+                                            columns === count
+                                                ? "active"
+                                                : ""
+                                        }
+                                        onClick={() => setColumns(count)}
+                                        aria-label={`${count} products per row`}
+                                        title={`${count} per row`}
+                                    >
 
-                                <p>
-                                    Try changing your search or filter selections.
-                                </p>
+                                        <span className="column-glyph">
+                                            {Array.from(
+                                                { length: count },
+                                                (_, i) => (
+                                                    <i key={i} />
+                                                )
+                                            )}
+                                        </span>
 
-                                <button
-                                    type="button"
-                                    onClick={resetFilters}
-                                >
-                                    Clear filters
-                                </button>
+                                    </button>
+                                ))}
 
                             </div>
                         )}
 
 
-                    {/* PRODUCT GRID */}
+                        <div className="view-toggle">
 
-                    {!loading &&
-                        !error &&
-                        sortedProducts.length > 0 && (
-                            <div
-                                className={`products-grid ${
-                                    viewMode === "list" ? "list-view" : ""
-                                }`}
+                            <button
+                                type="button"
+                                className={
+                                    viewMode === "grid" ? "active" : ""
+                                }
+                                onClick={() => setViewMode("grid")}
+                                aria-label="Grid view"
+                            >
+                                <Grid2X2 size={17} />
+                            </button>
+
+                            <button
+                                type="button"
+                                className={
+                                    viewMode === "list" ? "active" : ""
+                                }
+                                onClick={() => setViewMode("list")}
+                                aria-label="List view"
+                            >
+                                <List size={18} />
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                {/* ACTIVE FILTER CHIPS */}
+
+                {activeChips.length > 0 && (
+                    <div className="active-filters">
+
+                        {activeChips.map((chip) => (
+                            <button
+                                key={chip.key}
+                                type="button"
+                                className="filter-chip"
+                                onClick={chip.onRemove}
+                            >
+                                {chip.label}
+
+                                <X size={13} />
+                            </button>
+                        ))}
+
+                        <button
+                            type="button"
+                            className="clear-all"
+                            onClick={resetFilters}
+                        >
+                            Clear all
+                        </button>
+
+                    </div>
+                )}
+
+
+                <main
+                    className={`catalog-shell ${
+                        filtersOpen ? "" : "filters-closed"
+                    }`}
+                >
+
+                    {/* MOBILE FILTER BACKDROP */}
+
+                    {filtersOpen && (
+                        <div
+                            className="filter-backdrop"
+                            onClick={() => setFiltersOpen(false)}
+                        />
+                    )}
+
+
+                    {/* FILTER SIDEBAR */}
+
+                    <aside
+                        className={`catalog-sidebar ${
+                            filtersOpen ? "open" : ""
+                        }`}
+                    >
+
+                        <div className="filter-title">
+
+                            <SlidersHorizontal size={17} />
+
+                            <h2>Filters</h2>
+
+                            <button
+                                type="button"
+                                className="filter-close"
+                                onClick={() => setFiltersOpen(false)}
+                                aria-label="Close filters"
+                            >
+                                <X size={18} />
+                            </button>
+
+                        </div>
+
+
+                        <div className="filter-scroll">
+
+                            {/* PRICE RANGE */}
+
+                            <details
+                                className="filter-section"
+                                open
                             >
 
-                                {sortedProducts.map((product) => (
-                                    <article
-                                        className="shop-product-card"
-                                        key={product._id}
-                                    >
+                                <summary>
+                                    <h3>Price Range</h3>
+
+                                    <ChevronDown size={16} />
+                                </summary>
+
+                                <div className="filter-body">
+
+                                    <div className="price-inputs">
+
+                                        <label>
+                                            <span>Min (Rs.)</span>
+
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                value={minPrice}
+                                                onChange={(e) =>
+                                                {
+                                                    setMinPrice(
+                                                        Math.max(
+                                                            0,
+                                                            Number(e.target.value) || 0
+                                                        )
+                                                    );
+                                                }}
+                                            />
+                                        </label>
+
+                                        <label>
+                                            <span>Max (Rs.)</span>
+
+                                            <input
+                                                type="number"
+                                                min={minPrice}
+                                                value={maxPrice}
+                                                onChange={(e) =>
+                                                {
+                                                    setMaxPrice(
+                                                        Math.max(
+                                                            minPrice,
+                                                            Number(e.target.value) || 0
+                                                        )
+                                                    );
+                                                }}
+                                            />
+                                        </label>
+
+                                    </div>
+
+                                    <input
+                                        className="price-range"
+                                        aria-label="Maximum price"
+                                        type="range"
+                                        min="0"
+                                        max={priceCeiling}
+                                        value={Math.min(
+                                            maxPrice,
+                                            priceCeiling
+                                        )}
+                                        onChange={(e) =>
+                                        {
+                                            setMaxPrice(
+                                                Math.max(
+                                                    minPrice,
+                                                    Number(e.target.value)
+                                                )
+                                            );
+                                        }}
+                                    />
+
+                                    <div className="price-caption">
+
+                                        <span>
+                                            Rs. {formatPrice(minPrice)}
+                                        </span>
+
+                                        <span>
+                                            Rs. {formatPrice(maxPrice)}
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            </details>
+
+
+                            {/* CATEGORY FILTER */}
+
+                            <details
+                                className="filter-section"
+                                open
+                            >
+
+                                <summary>
+                                    <h3>Category</h3>
+
+                                    <ChevronDown size={16} />
+                                </summary>
+
+                                <div className="filter-body">
+
+                                    <div className="filter-links">
 
                                         <Link
-                                            to={`/products/${product._id}`}
-                                            className="shop-product-image"
+                                            className={
+                                                selectedCategory.toLowerCase() === "all"
+                                                    ? "active"
+                                                    : ""
+                                            }
+                                            to="/products"
                                         >
+                                            All Products
 
-                                            {product.image ? (
-                                                <img
-                                                    src={product.image}
-                                                    alt={product.name || "Product"}
-                                                    loading="lazy"
-                                                />
-                                            ) : (
-                                                <div className="shop-no-image">
-                                                    No Image
-                                                </div>
-                                            )}
-
-                                            <span className="image-category">
-                                                {product.category || "Product"}
-                                            </span>
-
+                                            <span>{products.length}</span>
                                         </Link>
 
-
-                                        {/* WISHLIST HEART */}
-
-                                        <button
-                                            className={`favorite-button ${
-                                                favorites.includes(
-                                                    String(product._id)
-                                                )
-                                                    ? "is-favorite"
-                                                    : ""
-                                            }`}
-                                            type="button"
-                                            onClick={() =>
-                                            {
-                                                toggleFavorite(product._id);
-                                            }}
-                                            disabled={
-                                                busyFavorite ===
-                                                String(product._id)
-                                            }
-                                            aria-label={
-                                                favorites.includes(
-                                                    String(product._id)
-                                                )
-                                                    ? "Remove from wishlist"
-                                                    : "Add to wishlist"
-                                            }
-                                            title={
-                                                favorites.includes(
-                                                    String(product._id)
-                                                )
-                                                    ? "Remove from wishlist"
-                                                    : "Add to wishlist"
-                                            }
-                                        >
-                                            <Heart
-                                                size={17}
-                                                fill={
-                                                    favorites.includes(
-                                                        String(product._id)
-                                                    )
-                                                        ? "currentColor"
-                                                        : "none"
+                                        {categories.slice(0, 7).map((category) => (
+                                            <Link
+                                                key={category}
+                                                className={
+                                                    selectedCategory.toLowerCase() ===
+                                                    category.toLowerCase()
+                                                        ? "active"
+                                                        : ""
                                                 }
-                                            />
-                                        </button>
+                                                to={`/products?category=${encodeURIComponent(
+                                                    category
+                                                )}`}
+                                            >
+                                                {category}
+
+                                                <span>
+                                                    {
+                                                        products.filter(
+                                                            (product) =>
+                                                                product.category === category
+                                                        ).length
+                                                    }
+                                                </span>
+                                            </Link>
+                                        ))}
+
+                                        {categories.length > 7 && (
+                                            <details className="more-filters">
+
+                                                <summary>See more</summary>
+
+                                                {categories.slice(7).map((category) => (
+                                                    <Link
+                                                        key={category}
+                                                        to={`/products?category=${encodeURIComponent(
+                                                            category
+                                                        )}`}
+                                                    >
+                                                        {category}
+                                                    </Link>
+                                                ))}
+
+                                            </details>
+                                        )}
+
+                                    </div>
+
+                                </div>
+
+                            </details>
 
 
-                                        <div className="shop-product-info">
+                            {/* BRAND FILTER */}
 
-                                            <h2>
-                                                <Link
-                                                    to={`/products/${product._id}`}
+                            {brands.length > 0 && (
+                                <details
+                                    className="filter-section"
+                                    open
+                                >
+
+                                    <summary>
+                                        <h3>Brands</h3>
+
+                                        <ChevronDown size={16} />
+                                    </summary>
+
+                                    <div className="filter-body">
+
+                                        <div className="checkbox-list">
+
+                                            {brands.map((brand) => (
+                                                <label key={brand}>
+
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedBrands.includes(brand)}
+                                                        onChange={() => toggleBrand(brand)}
+                                                    />
+
+                                                    <span>{brand}</span>
+
+                                                    <small>
+                                                        {
+                                                            products.filter(
+                                                                (product) =>
+                                                                    product.brand === brand
+                                                            ).length
+                                                        }
+                                                    </small>
+
+                                                </label>
+                                            ))}
+
+                                        </div>
+
+                                    </div>
+
+                                </details>
+                            )}
+
+
+                            {/* RATING FILTER */}
+
+                            <details
+                                className="filter-section"
+                                open
+                            >
+
+                                <summary>
+                                    <h3>Ratings</h3>
+
+                                    <ChevronDown size={16} />
+                                </summary>
+
+                                <div className="filter-body">
+
+                                    <div className="rating-filters">
+
+                                        {[5, 4, 3, 2, 1].map((rating) => (
+                                            <label
+                                                key={rating}
+                                                className={
+                                                    minRating === rating
+                                                        ? "selected"
+                                                        : ""
+                                                }
+                                            >
+
+                                                <input
+                                                    type="radio"
+                                                    name="rating"
+                                                    checked={minRating === rating}
+                                                    onChange={() => setMinRating(rating)}
+                                                />
+
+                                                <span
+                                                    className="rating-stars"
+                                                    aria-label={`${rating} stars`}
                                                 >
-                                                    {product.name ||
-                                                        "Untitled product"}
-                                                </Link>
-                                            </h2>
-
-                                            <div className="product-rating">
-
-                                                <span className="rating-stars">
                                                     {Array.from(
                                                         { length: 5 },
                                                         (_, i) => (
                                                             <Star
                                                                 key={i}
-                                                                size={12}
+                                                                size={13}
                                                                 fill={
-                                                                    i <
-                                                                    Math.round(
-                                                                        Number(
-                                                                            product.rating || 0
-                                                                        )
-                                                                    )
+                                                                    i < rating
                                                                         ? "currentColor"
                                                                         : "none"
                                                                 }
@@ -1218,55 +1207,368 @@ function Products()
                                                     )}
                                                 </span>
 
-                                                <span>
-                                                    {product.rating
-                                                        ? Number(
-                                                            product.rating
-                                                        ).toFixed(1)
-                                                        : "New"}
-                                                </span>
+                                                <span>{rating} & up</span>
 
-                                                {product.reviewsCount != null && (
-                                                    <small>
-                                                        ({product.reviewsCount} reviews)
-                                                    </small>
-                                                )}
+                                            </label>
+                                        ))}
 
-                                            </div>
+                                        {minRating > 0 && (
+                                            <button
+                                                className="clear-rating"
+                                                type="button"
+                                                onClick={() => setMinRating(0)}
+                                            >
+                                                Clear rating
+                                            </button>
+                                        )}
 
-                                            <p className="product-description">
-                                                {product.description ||
-                                                    "Explore product details and specifications."}
-                                            </p>
+                                    </div>
 
-                                            <div className="shop-product-bottom">
+                                </div>
 
-                                                <strong>
-                                                    Rs. {formatPrice(product.price)}
-                                                </strong>
+                            </details>
 
-                                                <Link
-                                                    to={`/products/${product._id}`}
-                                                    className="product-action"
-                                                >
-                                                    <ShoppingBag size={14} />
+                        </div>
 
-                                                    View Product
-                                                </Link>
 
-                                            </div>
+                        {/* SIDEBAR ACTIONS */}
 
-                                        </div>
+                        <div className="filter-actions">
 
-                                    </article>
-                                ))}
+                            <button
+                                className="reset-filters"
+                                type="button"
+                                onClick={resetFilters}
+                            >
+                                <RotateCcw size={14} />
+
+                                Reset filters
+                            </button>
+
+                            <button
+                                className="apply-filters"
+                                type="button"
+                                onClick={() => setFiltersOpen(false)}
+                            >
+                                Show {sortedProducts.length} results
+                            </button>
+
+                        </div>
+
+                    </aside>
+
+
+                    {/* MAIN PRODUCTS SECTION */}
+
+                    <section className="catalog-main">
+
+                        {/* WISHLIST TOAST NOTIFICATION */}
+
+                        {(wishlistMessage || wishlistError) && (
+                            <div
+                                className={`wishlist-toast ${
+                                    wishlistError
+                                        ? "toast-error"
+                                        : "toast-success"
+                                }`}
+                                role={wishlistError ? "alert" : "status"}
+                                key={wishlistError || wishlistMessage}
+                            >
+
+                                <div className="wishlist-toast-icon">
+
+                                    {wishlistError ? (
+                                        <AlertCircle size={21} />
+                                    ) : (
+                                        <CheckCircle size={21} />
+                                    )}
+
+                                </div>
+
+                                <div className="wishlist-toast-content">
+
+                                    <strong>
+                                        {wishlistError
+                                            ? "Something went wrong"
+                                            : "Wishlist Updated"}
+                                    </strong>
+
+                                    <p>
+                                        {wishlistError || wishlistMessage}
+                                    </p>
+
+                                    {!wishlistError && (
+                                        <Link to="/wishlist">
+                                            View Wishlist
+                                        </Link>
+                                    )}
+
+                                </div>
+
+                                <button
+                                    type="button"
+                                    className="wishlist-toast-close"
+                                    onClick={() =>
+                                    {
+                                        setWishlistMessage("");
+
+                                        setWishlistError("");
+                                    }}
+                                    aria-label="Dismiss notification"
+                                >
+                                    <X size={18} />
+                                </button>
 
                             </div>
                         )}
 
-                </section>
 
-            </main>
+                        {/* LOADING */}
+
+                        {loading && (
+                            <div className="catalog-message">
+
+                                <div className="loading-spinner" />
+
+                                <h2>Loading products</h2>
+
+                                <p>
+                                    Please wait while we load the latest collection.
+                                </p>
+
+                            </div>
+                        )}
+
+
+                        {/* ERROR */}
+
+                        {!loading && error && (
+                            <div className="catalog-message error">
+
+                                <h2>Unable to load products</h2>
+
+                                <p>{error}</p>
+
+                                <button
+                                    type="button"
+                                    onClick={() => window.location.reload()}
+                                >
+                                    Try Again
+                                </button>
+
+                            </div>
+                        )}
+
+
+                        {/* EMPTY RESULTS */}
+
+                        {!loading &&
+                            !error &&
+                            sortedProducts.length === 0 && (
+                                <div className="catalog-message">
+
+                                    <Search size={30} />
+
+                                    <h2>No matching products</h2>
+
+                                    <p>
+                                        Try changing your search or filter selections.
+                                    </p>
+
+                                    <button
+                                        type="button"
+                                        onClick={resetFilters}
+                                    >
+                                        Clear filters
+                                    </button>
+
+                                </div>
+                            )}
+
+
+                        {/* PRODUCT GRID */}
+
+                        {!loading &&
+                            !error &&
+                            sortedProducts.length > 0 && (
+                                <div
+                                    className={`products-grid ${
+                                        viewMode === "list" ? "list-view" : ""
+                                    }`}
+                                    data-cols={columns}
+                                    style={{ "--cols": columns }}
+                                >
+
+                                    {sortedProducts.map((product, index) => (
+                                        <article
+                                            className="shop-product-card"
+                                            style={{ "--n": Math.min(index, 14) }}
+                                            key={product._id}
+                                        >
+
+                                            <Link
+                                                to={`/products/${product._id}`}
+                                                className="shop-product-image"
+                                            >
+
+                                                {product.image ? (
+                                                    <img
+                                                        src={product.image}
+                                                        alt={product.name || "Product"}
+                                                        loading="lazy"
+                                                    />
+                                                ) : (
+                                                    <div className="shop-no-image">
+                                                        No Image
+                                                    </div>
+                                                )}
+
+                                                <span className="quick-view">
+                                                    View Product
+
+                                                    <ArrowRight size={16} />
+                                                </span>
+
+                                            </Link>
+
+
+                                            {/* WISHLIST HEART */}
+
+                                            <button
+                                                className={`favorite-button ${
+                                                    favorites.includes(
+                                                        String(product._id)
+                                                    )
+                                                        ? "is-favorite"
+                                                        : ""
+                                                }`}
+                                                type="button"
+                                                onClick={() =>
+                                                {
+                                                    toggleFavorite(product._id);
+                                                }}
+                                                disabled={
+                                                    busyFavorite ===
+                                                    String(product._id)
+                                                }
+                                                aria-label={
+                                                    favorites.includes(
+                                                        String(product._id)
+                                                    )
+                                                        ? "Remove from wishlist"
+                                                        : "Add to wishlist"
+                                                }
+                                                title={
+                                                    favorites.includes(
+                                                        String(product._id)
+                                                    )
+                                                        ? "Remove from wishlist"
+                                                        : "Add to wishlist"
+                                                }
+                                            >
+                                                <Heart
+                                                    size={18}
+                                                    fill={
+                                                        favorites.includes(
+                                                            String(product._id)
+                                                        )
+                                                            ? "currentColor"
+                                                            : "none"
+                                                    }
+                                                />
+                                            </button>
+
+
+                                            <div className="shop-product-info">
+
+                                                <span className="product-category">
+                                                    {product.category || "Product"}
+                                                </span>
+
+                                                <h2>
+                                                    <Link
+                                                        to={`/products/${product._id}`}
+                                                    >
+                                                        {product.name ||
+                                                            "Untitled product"}
+                                                    </Link>
+                                                </h2>
+
+                                                <div className="product-rating">
+
+                                                    <span className="rating-stars">
+                                                        {Array.from(
+                                                            { length: 5 },
+                                                            (_, i) => (
+                                                                <Star
+                                                                    key={i}
+                                                                    size={13}
+                                                                    fill={
+                                                                        i <
+                                                                        Math.round(
+                                                                            Number(
+                                                                                product.rating || 0
+                                                                            )
+                                                                        )
+                                                                            ? "currentColor"
+                                                                            : "none"
+                                                                    }
+                                                                />
+                                                            )
+                                                        )}
+                                                    </span>
+
+                                                    <span>
+                                                        {product.rating
+                                                            ? Number(
+                                                                product.rating
+                                                            ).toFixed(1)
+                                                            : "New"}
+                                                    </span>
+
+                                                    {product.reviewsCount != null && (
+                                                        <small>
+                                                            ({product.reviewsCount} reviews)
+                                                        </small>
+                                                    )}
+
+                                                </div>
+
+                                                <p className="product-description">
+                                                    {product.description ||
+                                                        "Explore product details and specifications."}
+                                                </p>
+
+                                                <div className="shop-product-bottom">
+
+                                                    <strong>
+                                                        Rs. {formatPrice(product.price)}
+                                                    </strong>
+
+                                                    <Link
+                                                        to={`/products/${product._id}`}
+                                                        className="product-action"
+                                                    >
+                                                        <ShoppingBag size={15} />
+
+                                                        View Product
+                                                    </Link>
+
+                                                </div>
+
+                                            </div>
+
+                                        </article>
+                                    ))}
+
+                                </div>
+                            )}
+
+                    </section>
+
+                </main>
+
+            </div>
 
         </div>
     );
