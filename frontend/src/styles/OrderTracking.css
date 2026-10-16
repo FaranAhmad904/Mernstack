@@ -1,14 +1,30 @@
 /* ==========================================
    ORDER TRACKING PANEL
+   Theme: Black, White & Orange
+   (sits inside the My Orders card)
 ========================================== */
 
 .order-tracking-panel
 {
-    margin-top: 20px;
-    padding: 22px;
-    background: #faf9ff;
-    border: 1px solid #e9e2f8;
-    border-radius: 16px;
+    --pp-black: #000000;
+    --pp-muted: #555555;
+    --pp-line: #e4e4e7;
+    --pp-soft: #f4f4f6;
+    --pp-orange: #f59b20;
+    --pp-red: #b3261e;
+
+    padding: 26px;
+    background: #ffffff;
+    border-top: 1px solid #000000;
+    color: var(--pp-black);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.order-tracking-panel *,
+.order-tracking-panel *::before,
+.order-tracking-panel *::after
+{
+    box-sizing: border-box;
 }
 
 
@@ -22,37 +38,39 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 16px;
-    margin-bottom: 25px;
+    margin-bottom: 28px;
 }
 
 .tracking-header h3
 {
     display: flex;
     align-items: center;
-    gap: 9px;
-    margin: 0 0 7px;
-    color: #242038;
-    font-size: 17px;
+    gap: 10px;
+    margin: 0 0 8px;
+    color: #000000;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
 }
 
 .tracking-header h3 svg
 {
-    color: #7c3aed;
+    color: var(--pp-orange);
 }
 
 .tracking-header p
 {
     margin: 0;
-    color: #777386;
+    color: var(--pp-muted);
     font-size: 13px;
 }
 
 .tracking-status
 {
-    padding: 7px 12px;
-    background: #f0e8ff;
-    color: #6d28d9;
-    border-radius: 20px;
+    padding: 8px 16px;
+    background: #000000;
+    color: #ffffff;
+    border-radius: 40px;
     font-size: 12px;
     font-weight: 700;
     white-space: nowrap;
@@ -68,14 +86,14 @@
     display: flex;
     flex-direction: column;
     gap: 0;
-    margin-bottom: 24px;
+    margin-bottom: 26px;
 }
 
 .tracking-step
 {
     position: relative;
     display: flex;
-    gap: 14px;
+    gap: 16px;
     min-height: 76px;
 }
 
@@ -83,16 +101,16 @@
 {
     content: "";
     position: absolute;
-    top: 28px;
-    left: 13px;
+    top: 32px;
+    left: 15px;
     width: 2px;
-    height: calc(100% - 15px);
-    background: #dedbe7;
+    height: calc(100% - 18px);
+    background: var(--pp-line);
 }
 
 .tracking-step-completed:not(:last-child)::before
 {
-    background: #8b5cf6;
+    background: #000000;
 }
 
 .tracking-step-marker
@@ -101,49 +119,59 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     flex-shrink: 0;
-    background: #eeecf4;
-    color: #9b96aa;
+    background: var(--pp-soft);
+    color: #8a8a93;
+    border: 1px solid var(--pp-line);
     border-radius: 50%;
+    transition: transform 0.2s ease;
+}
+
+.tracking-step:hover .tracking-step-marker
+{
+    transform: scale(1.08);
 }
 
 .tracking-step-completed .tracking-step-marker
 {
-    background: #ede4ff;
-    color: #7c3aed;
+    background: #000000;
+    color: var(--pp-orange);
+    border-color: #000000;
 }
 
 .tracking-step-current .tracking-step-marker
 {
-    background: #7c3aed;
-    color: #ffffff;
-    box-shadow: 0 0 0 5px #ede4ff;
+    background: var(--pp-orange);
+    color: #000000;
+    border-color: var(--pp-orange);
+    box-shadow: 0 0 0 5px #fde7c2;
 }
 
 .tracking-step-content
 {
-    padding: 3px 0 22px;
+    padding: 5px 0 22px;
 }
 
 .tracking-step-content strong
 {
     display: block;
     margin-bottom: 5px;
-    color: #8a8599;
+    color: #8a8a93;
     font-size: 14px;
+    font-weight: 700;
 }
 
 .tracking-step-completed .tracking-step-content strong
 {
-    color: #31244d;
+    color: #000000;
 }
 
 .tracking-step-content p
 {
     margin: 0;
-    color: #858092;
+    color: var(--pp-muted);
     font-size: 12px;
     line-height: 1.6;
 }
@@ -157,16 +185,17 @@
 {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 15px;
-    background: #ffffff;
-    border: 1px solid #e7e0f4;
-    border-radius: 12px;
+    gap: 14px;
+    padding: 16px 18px;
+    background: var(--pp-soft);
+    border-left: 5px solid var(--pp-orange);
+    border-radius: 4px;
 }
 
 .tracking-estimate > svg
 {
-    color: #7c3aed;
+    flex-shrink: 0;
+    color: #000000;
 }
 
 .tracking-estimate div
@@ -178,14 +207,15 @@
 
 .tracking-estimate span
 {
-    color: #777386;
+    color: var(--pp-muted);
     font-size: 12px;
 }
 
 .tracking-estimate strong
 {
-    color: #302348;
-    font-size: 14px;
+    color: #000000;
+    font-size: 15px;
+    font-weight: 800;
 }
 
 
@@ -200,9 +230,9 @@
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 14px;
-    margin-top: 20px;
-    padding-top: 18px;
-    border-top: 1px solid #e9e2f8;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--pp-line);
 }
 
 .tracking-cancel-section p
@@ -210,7 +240,7 @@
     flex: 1;
     min-width: 180px;
     margin: 0;
-    color: #777386;
+    color: var(--pp-muted);
     font-size: 12px;
     line-height: 1.6;
 }
@@ -221,21 +251,25 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 10px 15px;
+    min-height: 44px;
+    padding: 0 22px;
     background: #ffffff;
-    color: #dc2626;
-    border: 1px solid #fecaca;
-    border-radius: 9px;
+    color: var(--pp-red);
+    border: 1px solid var(--pp-red);
+    border-radius: 4px;
+    font-family: inherit;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
 }
 
 .tracking-cancel-button:hover:not(:disabled)
 {
-    background: #fef2f2;
-    border-color: #f87171;
+    background: var(--pp-red);
+    color: #ffffff;
 }
 
 .tracking-cancel-button:disabled
@@ -253,8 +287,17 @@
 {
     display: flex;
     align-items: center;
-    gap: 13px;
-    color: #dc2626;
+    gap: 14px;
+    padding: 16px 18px;
+    background: #fef2f2;
+    border-left: 5px solid #dc2626;
+    border-radius: 4px;
+    color: var(--pp-red);
+}
+
+.tracking-cancelled > svg
+{
+    flex-shrink: 0;
 }
 
 .tracking-cancelled strong
@@ -262,13 +305,25 @@
     display: block;
     margin-bottom: 5px;
     font-size: 15px;
+    font-weight: 700;
 }
 
 .tracking-cancelled p
 {
     margin: 0;
-    color: #777386;
+    color: var(--pp-muted);
     font-size: 13px;
+}
+
+
+/* ==========================================
+   ACCESSIBILITY
+========================================== */
+
+.order-tracking-panel button:focus-visible
+{
+    outline: 2px solid var(--pp-orange);
+    outline-offset: 3px;
 }
 
 
@@ -280,7 +335,7 @@
 {
     .order-tracking-panel
     {
-        padding: 16px;
+        padding: 18px 14px;
     }
 
     .tracking-header
@@ -297,5 +352,20 @@
     .tracking-cancel-button
     {
         width: 100%;
+    }
+}
+
+
+/* ==========================================
+   REDUCED MOTION
+========================================== */
+
+@media (prefers-reduced-motion: reduce)
+{
+    .order-tracking-panel *,
+    .order-tracking-panel *::before,
+    .order-tracking-panel *::after
+    {
+        transition-duration: 0.01ms !important;
     }
 }
