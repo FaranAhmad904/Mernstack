@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import Navbar from "../components/Navbar";
 
@@ -59,6 +59,17 @@ function Checkout() {
         },
         0
     );
+
+
+    // ==========================================
+    // FORMAT PRICE
+    // ==========================================
+
+    const formatPrice = (price) => {
+
+        return Number(price || 0).toLocaleString("en-PK");
+
+    };
 
 
     // ==========================================
@@ -167,21 +178,26 @@ function Checkout() {
             <>
                 <Navbar />
 
-                <div className="checkout-empty">
+                <div className="checkout-page">
 
-                    <h2>
-                        Your cart is empty
-                    </h2>
+                    <div className="checkout-empty">
 
-                    <p>
-                        Add some products before checking out.
-                    </p>
+                        <h2>
+                            Your cart is empty
+                        </h2>
 
-                    <button
-                        onClick={() => navigate("/products")}
-                    >
-                        Continue Shopping
-                    </button>
+                        <p>
+                            Add some products before checking out.
+                        </p>
+
+                        <button
+                            type="button"
+                            onClick={() => navigate("/products")}
+                        >
+                            Continue Shopping
+                        </button>
+
+                    </div>
 
                 </div>
 
@@ -207,14 +223,30 @@ function Checkout() {
 
 
                 {/* ==========================================
+                    BREADCRUMB
+                ========================================== */}
+
+                <nav
+                    className="checkout-breadcrumb"
+                    aria-label="Breadcrumb"
+                >
+                    <Link to="/">Home</Link>
+
+                    <span>/</span>
+
+                    <Link to="/cart">Cart</Link>
+
+                    <span>/</span>
+
+                    <strong>Checkout</strong>
+                </nav>
+
+
+                {/* ==========================================
                     PAGE HEADER
                 ========================================== */}
 
                 <div className="checkout-header">
-
-                    <p>
-                        CHECKOUT
-                    </p>
 
                     <h1>
                         Complete Your Order
@@ -248,11 +280,12 @@ function Checkout() {
 
                             <div className="form-group">
 
-                                <label>
+                                <label htmlFor="customerName">
                                     Full Name
                                 </label>
 
                                 <input
+                                    id="customerName"
                                     type="text"
                                     name="customerName"
                                     value={formData.customerName}
@@ -268,11 +301,12 @@ function Checkout() {
 
                             <div className="form-group">
 
-                                <label>
+                                <label htmlFor="phone">
                                     Phone Number
                                 </label>
 
                                 <input
+                                    id="phone"
                                     type="tel"
                                     name="phone"
                                     value={formData.phone}
@@ -288,11 +322,12 @@ function Checkout() {
 
                             <div className="form-group">
 
-                                <label>
+                                <label htmlFor="shippingAddress">
                                     Shipping Address
                                 </label>
 
                                 <textarea
+                                    id="shippingAddress"
                                     name="shippingAddress"
                                     value={formData.shippingAddress}
                                     onChange={handleChange}
@@ -308,11 +343,12 @@ function Checkout() {
 
                             <div className="form-group">
 
-                                <label>
+                                <label htmlFor="city">
                                     City
                                 </label>
 
                                 <input
+                                    id="city"
                                     type="text"
                                     name="city"
                                     value={formData.city}
@@ -332,9 +368,17 @@ function Checkout() {
                                     Payment Method
                                 </label>
 
-                                <div className="payment-option">
+                                <label
+                                    className={`payment-option ${
+                                        formData.paymentMethod === "COD"
+                                            ? "selected"
+                                            : ""
+                                    }`}
+                                    htmlFor="payment-cod"
+                                >
 
                                     <input
+                                        id="payment-cod"
                                         type="radio"
                                         name="paymentMethod"
                                         value="COD"
@@ -348,7 +392,7 @@ function Checkout() {
                                         Cash on Delivery
                                     </span>
 
-                                </div>
+                                </label>
 
                             </div>
 
@@ -357,7 +401,10 @@ function Checkout() {
 
                             {error && (
 
-                                <div className="checkout-error">
+                                <div
+                                    className="checkout-error"
+                                    role="alert"
+                                >
                                     {error}
                                 </div>
 
@@ -407,7 +454,27 @@ function Checkout() {
                                     key={item._id}
                                 >
 
-                                    <div>
+                                    <div className="summary-item-image">
+
+                                        {item.image ? (
+
+                                            <img
+                                                src={item.image}
+                                                alt={item.name}
+                                            />
+
+                                        ) : (
+
+                                            <span>
+                                                No Image
+                                            </span>
+
+                                        )}
+
+                                    </div>
+
+
+                                    <div className="summary-item-info">
 
                                         <h4>
                                             {item.name}
@@ -420,8 +487,10 @@ function Checkout() {
                                     </div>
 
 
-                                    <span>
-                                        Rs. {item.price * item.quantity}
+                                    <span className="summary-item-price">
+                                        Rs. {formatPrice(
+                                            item.price * item.quantity
+                                        )}
                                     </span>
 
                                 </div>
@@ -440,7 +509,7 @@ function Checkout() {
                             </span>
 
                             <strong>
-                                Rs. {totalAmount}
+                                Rs. {formatPrice(totalAmount)}
                             </strong>
 
                         </div>

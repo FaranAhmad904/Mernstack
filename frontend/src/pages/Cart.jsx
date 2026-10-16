@@ -4,6 +4,12 @@
 
 import { Link } from "react-router-dom";
 
+import {
+    ShoppingBag,
+    ArrowRight,
+    Trash2
+} from "lucide-react";
+
 import Navbar from "../components/Navbar";
 
 import { useCart } from "../context/CartContext";
@@ -47,6 +53,31 @@ function Cart() {
 
 
     // ==========================================
+    // CALCULATE TOTAL QUANTITY
+    // ==========================================
+
+    const totalQuantity = cartItems.reduce(
+        (total, item) => {
+
+            return total + item.quantity;
+
+        },
+        0
+    );
+
+
+    // ==========================================
+    // FORMAT PRICE
+    // ==========================================
+
+    const formatPrice = (price) => {
+
+        return Number(price || 0).toLocaleString("en-PK");
+
+    };
+
+
+    // ==========================================
     // EMPTY CART
     // ==========================================
 
@@ -61,7 +92,7 @@ function Cart() {
                     <div className="empty-cart">
 
                         <div className="empty-cart-icon">
-                            🛒
+                            <ShoppingBag size={38} />
                         </div>
 
                         <h1>
@@ -78,6 +109,8 @@ function Cart() {
                             className="continue-shopping-button"
                         >
                             Continue Shopping
+
+                            <ArrowRight size={17} />
                         </Link>
 
                     </div>
@@ -97,6 +130,22 @@ function Cart() {
             <Navbar />
 
             <div className="cart-page">
+
+                {/* ==================================
+                    BREADCRUMB
+                ================================== */}
+
+                <nav
+                    className="cart-breadcrumb"
+                    aria-label="Breadcrumb"
+                >
+                    <Link to="/">Home</Link>
+
+                    <span>/</span>
+
+                    <strong>Cart</strong>
+                </nav>
+
 
                 {/* ==================================
                     PAGE HEADER
@@ -119,9 +168,12 @@ function Cart() {
                     </div>
 
                     <button
+                        type="button"
                         className="clear-cart-button"
                         onClick={clearCart}
                     >
+                        <Trash2 size={15} />
+
                         Clear Cart
                     </button>
 
@@ -186,7 +238,7 @@ function Cart() {
                                     </h2>
 
                                     <p className="cart-item-price">
-                                        Rs. {item.price}
+                                        Rs. {formatPrice(item.price)}
                                     </p>
 
                                 </div>
@@ -205,6 +257,8 @@ function Cart() {
                                     <div className="quantity-controls">
 
                                         <button
+                                            type="button"
+                                            aria-label="Decrease quantity"
                                             onClick={() =>
                                                 decreaseQuantity(
                                                     item._id
@@ -219,6 +273,8 @@ function Cart() {
                                         </strong>
 
                                         <button
+                                            type="button"
+                                            aria-label="Increase quantity"
                                             onClick={() =>
                                                 increaseQuantity(
                                                     item._id
@@ -245,8 +301,10 @@ function Cart() {
 
                                     <strong>
                                         Rs.{" "}
-                                        {item.price *
-                                            item.quantity}
+                                        {formatPrice(
+                                            item.price *
+                                            item.quantity
+                                        )}
                                     </strong>
 
                                 </div>
@@ -257,6 +315,7 @@ function Cart() {
                                 ================================== */}
 
                                 <button
+                                    type="button"
                                     className="remove-cart-item"
                                     onClick={() =>
                                         removeFromCart(
@@ -291,12 +350,7 @@ function Cart() {
                             </span>
 
                             <span>
-                                {cartItems.reduce(
-                                    (total, item) =>
-                                        total +
-                                        item.quantity,
-                                    0
-                                )}
+                                {totalQuantity}
                             </span>
 
                         </div>
@@ -308,7 +362,7 @@ function Cart() {
                             </span>
 
                             <span>
-                                Rs. {totalPrice}
+                                Rs. {formatPrice(totalPrice)}
                             </span>
 
                         </div>
@@ -322,22 +376,24 @@ function Cart() {
                             </span>
 
                             <strong>
-                                Rs. {totalPrice}
+                                Rs. {formatPrice(totalPrice)}
                             </strong>
 
                         </div>
 
 
                         {/* ==================================
-                            CHECKOUT FOR LATER
+                            CHECKOUT
                         ================================== */}
 
-                       <Link
-    to="/checkout"
-    className="checkout-button"
->
-    Checkout
-</Link>
+                        <Link
+                            to="/checkout"
+                            className="checkout-button"
+                        >
+                            Checkout
+
+                            <ArrowRight size={17} />
+                        </Link>
 
 
                         <Link
