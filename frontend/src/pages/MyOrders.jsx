@@ -439,6 +439,22 @@ function MyOrders()
 
 
                     {/* ==================================
+                        BREADCRUMB
+                    ================================== */}
+
+                    <nav
+                        className="orders-breadcrumb"
+                        aria-label="Breadcrumb"
+                    >
+                        <Link to="/">Home</Link>
+
+                        <span>/</span>
+
+                        <strong>My Orders</strong>
+                    </nav>
+
+
+                    {/* ==================================
                         PAGE HEADER
                     ================================== */}
 
@@ -487,7 +503,7 @@ function MyOrders()
 
                         <div className="orders-summary-card">
 
-                            <div className="orders-summary-icon purple">
+                            <div className="orders-summary-icon dark">
                                 <Package size={22} />
                             </div>
 
@@ -529,7 +545,7 @@ function MyOrders()
 
                         <div className="orders-summary-card">
 
-                            <div className="orders-summary-icon green">
+                            <div className="orders-summary-icon dark">
                                 <Wallet size={22} />
                             </div>
 
@@ -620,6 +636,7 @@ function MyOrders()
                                             event.target.value
                                         );
                                     }}
+                                    aria-label="Search orders"
                                 />
 
                             </div>
@@ -782,7 +799,7 @@ function MyOrders()
                                         <div className="my-order-reference">
 
                                             <span className="my-order-label">
-                                                ORDER NUMBER
+                                                Order number
                                             </span>
 
                                             <h3>
@@ -978,7 +995,13 @@ function MyOrders()
                                         </div>
 
 
-                                        <div className="my-order-footer-note">
+                                        <div
+                                            className={`my-order-footer-note ${
+                                                order.status === "Cancelled"
+                                                    ? "is-cancelled"
+                                                    : ""
+                                            }`}
+                                        >
 
                                             {order.status === "Cancelled"
                                                 ? <XCircle size={16} />
